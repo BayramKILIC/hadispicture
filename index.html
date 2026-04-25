@@ -402,7 +402,7 @@
     <!-- Bab -->
     <div>
       <div class="section-title" data-i18n="babTitle">Bab (Chapitre)</div>
-      <input type="text" id="bab" placeholder="باب..." style="direction:rtl;font-family:'Amiri',serif;font-size:18px;" />
+      <input type="text" id="bab" placeholder="باب..." style="direction:rtl;font-family:'Amiri',serif;font-size:18px;" value="باب الاِغْتِبَاطِ فِي الْعِلْمِ وَالْحِكْمَةِ" />
       <div class="color-group-label" style="margin-top:10px;" data-i18n="babColor">Couleur du Bab</div>
       <div class="dot-row" id="color-bab-row">
         <div class="color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
@@ -422,8 +422,8 @@
       </div>
       <div class="color-group-label" style="margin-top:10px;" data-i18n="babBgLabel">Fond derrière le Bab</div>
       <div class="box-color-row" id="bab-color-row">
-          <div class="no-color-dot active" data-color="none" title="Pas de couleur"></div>
-          <div class="box-color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
+          <div class="no-color-dot" data-color="none" title="Pas de couleur"></div>
+          <div class="box-color-dot active" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
           <div class="box-color-dot" data-color="#000000" style="background:#000000"></div>
           <div class="box-color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
           <div class="box-color-dot" data-color="#1a1209" style="background:#1a1209"></div>
@@ -441,7 +441,7 @@
     <!-- Hadith -->
     <div>
       <div class="section-title" data-i18n="hadithTitle">Texte du hadith</div>
-      <textarea id="hadith" placeholder="اكتب الحديث هنا...">مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ</textarea>
+      <textarea id="hadith" placeholder="اكتب الحديث هنا...">قَالَ النَّبِيُّ صلى الله عليه وسلم ‏ "‏ لاَ حَسَدَ إِلاَّ فِي اثْنَتَيْنِ رَجُلٌ آتَاهُ اللَّهُ مَالاً فَسُلِّطَ عَلَى هَلَكَتِهِ فِي الْحَقِّ، وَرَجُلٌ آتَاهُ اللَّهُ الْحِكْمَةَ، فَهْوَ يَقْضِي بِهَا وَيُعَلِّمُهَا ‏"‏‏.‏</textarea>
       <div class="color-group-label" style="margin-top:10px;" data-i18n="hadithColor">Couleur du texte</div>
       <div class="dot-row" id="color-row">
         <div class="color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
@@ -478,7 +478,7 @@
     <!-- Source -->
     <div>
       <div class="section-title" data-i18n="sourceTitle">Source / Référence</div>
-      <input type="text" id="source" value="رواه البخاري ومسلم" placeholder="رواه البخاري" />
+      <input type="text" id="source" value="رواه البخاري" placeholder="رواه البخاري" />
       <div class="toggle-row">
         <button class="toggle-btn" id="source-attached" data-i18n="attached">↩ Attachée au texte</button>
         <button class="toggle-btn active" id="source-separate" data-i18n="separate">↕ Séparée (bas)</button>
@@ -597,18 +597,18 @@
       <div class="section-title" data-i18n="textSize">Taille du texte</div>
       <div class="slider-row" style="margin-bottom:10px;">
         <label data-i18n="babLabel">Bab</label>
-        <input type="range" id="fs-bab" min="14" max="80" value="40" step="2" />
-        <span class="slider-val" id="fs-bab-out">40</span>
+        <input type="range" id="fs-bab" min="14" max="80" value="38" step="2" />
+        <span class="slider-val" id="fs-bab-out">38</span>
       </div>
       <div class="slider-row" style="margin-bottom:10px;">
         <label data-i18n="hadithLabel">Hadith</label>
-        <input type="range" id="fs-hadith" min="24" max="80" value="74" step="2" />
-        <span class="slider-val" id="fs-h-out">74</span>
+        <input type="range" id="fs-hadith" min="24" max="80" value="44" step="2" />
+        <span class="slider-val" id="fs-h-out">44</span>
       </div>
       <div class="slider-row">
         <label data-i18n="sourceLabel">Source</label>
-        <input type="range" id="fs-source" min="14" max="72" value="45" step="1" />
-        <span class="slider-val" id="fs-s-out">45</span>
+        <input type="range" id="fs-source" min="14" max="72" value="38" step="1" />
+        <span class="slider-val" id="fs-s-out">38</span>
       </div>
     </div>
 
@@ -649,7 +649,7 @@ const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
 
 let logoImg     = null;
-let showLogo    = true;
+let showLogo    = false;
 let logoPos     = 'bottom-center';
 let currentBg   = { type: 'gradient', index: 6 };
 let customBgImg = null;
@@ -660,7 +660,7 @@ let boxColor    = '#FFFFFF';
 let sourceBgColor = '#FFFFFF';
 let sourceColor = '#111111';
 let babColor      = '#111111';
-let babBgColor    = 'none';
+let babBgColor    = '#FFFFFF';
 let outlineBab    = false;
 let outlineBabW   = 2;
 let sourceMode    = 'separate';
@@ -724,7 +724,8 @@ document.getElementById('no-footer-btn').addEventListener('click', () => {
 (function loadDefaultBg() {
   const img = new Image();
   img.onload = () => { currentBg = { type: 'photo', img }; render(); };
-  img.src = 'backgrounds/bg-06.jpg';
+  img.onerror = () => { currentBg = { type: 'gradient', index: 3 }; render(); };
+  img.src = 'backgrounds/bg-04.jpg';
 })();
 
 /* ══════════════════════════════════════════════
@@ -808,7 +809,7 @@ function makeThumb(drawFn) {
 
 function addThumbToGrid(grid, thumbEl, label, onClick) {
   const div = document.createElement('div');
-  div.className = 'bg-thumb';
+  div.className = 'bg-thumb'+(i===3?' active':'');
   const lbl = document.createElement('div');
   lbl.className = 'thumb-label';
   lbl.textContent = label;
