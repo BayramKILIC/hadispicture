@@ -605,6 +605,11 @@
         <input type="range" id="fs-hadith" min="24" max="80" value="44" step="2" />
         <span class="slider-val" id="fs-h-out">44</span>
       </div>
+      <div class="slider-row" style="margin-bottom:10px;">
+        <label data-i18n="hadithWidth">Largeur</label>
+        <input type="range" id="hadith-width" min="30" max="100" value="100" step="5" />
+        <span class="slider-val" id="hadith-width-out">100%</span>
+      </div>
       <div class="slider-row">
         <label data-i18n="sourceLabel">Source</label>
         <input type="range" id="fs-source" min="14" max="72" value="38" step="1" />
@@ -660,6 +665,7 @@ let boxColor    = '#FFFFFF';
 let sourceBgColor = '#FFFFFF';
 let sourceColor = '#111111';
 let babColor      = '#111111';
+let hadithWidth   = 100; // % de la largeur disponible
 let babBgColor    = '#FFFFFF';
 let outlineBab    = false;
 let outlineBabW   = 2;
@@ -998,6 +1004,12 @@ document.getElementById('outline-bab-size').addEventListener('input', function()
 });
 
 // Taille Bab
+document.getElementById('hadith-width').addEventListener('input', function() {
+  hadithWidth = parseInt(this.value);
+  document.getElementById('hadith-width-out').textContent = this.value + '%';
+  render();
+});
+
 document.getElementById('fs-bab').addEventListener('input', function() {
   document.getElementById('fs-bab-out').textContent = this.value;
   render();
@@ -1136,7 +1148,7 @@ function render() {
   const logoSize = parseInt(document.getElementById('logo-size').value);
 
   const MARGIN_PX = 120;
-  const textMaxW  = W - MARGIN_PX * 2;
+  const textMaxW  = (W - MARGIN_PX * 2) * hadithWidth / 100;
   const lineH     = fsH * 1.75;
   const babLineH  = fsBab * 1.6;
 
@@ -1337,7 +1349,7 @@ const LANGS = {
   ar: {
     appTitle: '✦ منشئ صور الأحاديث ✦',
     appSub: 'اكتب حديثًا وحمّل الصورة بتنسيق 4:5 (800 × 1000)',
-    babTitle: 'باب (فصل)', babColor: 'لون الباب', babOutlineLabel: 'حدود الباب',
+    hadithWidth: 'عرض', babTitle: 'باب (فصل)', babColor: 'لون الباب', babOutlineLabel: 'حدود الباب',
     babBgLabel: 'خلفية الباب', babLabel: 'باب',
     hadithTitle: 'نص الحديث', sourceTitle: 'المصدر / المرجع',
     attached: '↩ ملحقة بالنص', separate: '↕ منفصلة (أسفل)',
@@ -1358,7 +1370,7 @@ const LANGS = {
   tr: {
     appTitle: '✦ Hadis Görseli Oluşturucu ✦',
     appSub: 'Bir hadis yazın ve 4:5 formatında görsel indirin (800 × 1000)',
-    babTitle: 'Bab (Bölüm)', babColor: 'Bab Rengi', babOutlineLabel: 'Bab Konturu',
+    hadithWidth: 'Genişlik', babTitle: 'Bab (Bölüm)', babColor: 'Bab Rengi', babOutlineLabel: 'Bab Konturu',
     babBgLabel: 'Bab Arka Planı', babLabel: 'Bab',
     hadithTitle: 'Hadis Metni', sourceTitle: 'Kaynak / Referans',
     attached: '↩ Metne Ekli', separate: '↕ Ayrı (Alt)',
