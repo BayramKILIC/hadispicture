@@ -907,16 +907,22 @@ function render() {
     ctx.restore();
   }
 
-  // Dessin du texte
+  // Dessin du texte — seulement si source séparée ou pas de source
+  // (si attachée, on dessine hadith+source ensemble dans le bloc source)
   ctx.fillStyle = textColor;
   ctx.textAlign = 'center'; ctx.direction = 'rtl';
   ctx.font = `bold ${fsH}px 'Amiri', serif`;
-  const lineCount = wrapText(hadithText, W/2, textCY, textMaxW, lineH);
+  let lineCount;
+  if (!sourceText || sourceMode === 'separate') {
+    lineCount = wrapText(hadithText, W/2, textCY, textMaxW, lineH);
+  } else {
+    lineCount = measuredLines; // sera redessiné avec source dans le bloc 5
+  }
 
   /* 5. Source */
   if (sourceText) {
     if (sourceMode === 'attached') {
-      // Attachée : même style que le hadith, juste après
+      // Attachée : hadith + source ensemble en un seul bloc
       const fullText = hadithText + ' ' + sourceText;
       ctx.fillStyle = textColor;
       ctx.textAlign = 'center'; ctx.direction = 'rtl';
