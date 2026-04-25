@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Générateur d'images Hadith</title>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -381,6 +381,26 @@
       line-height:1; padding:2px 4px; border-radius:6px;
     }
     .flag-btn.active { opacity:1; transform:scale(1.15); }
+
+    .font-row { display:flex; gap:8px; margin-top:8px; }
+    .font-btn {
+      flex:1; padding:8px 6px; font-size:13px;
+      cursor:pointer; border-radius:var(--radius-sm);
+      border:1px solid var(--border); background:var(--surface2);
+      color:var(--text-muted); transition:border .15s, color .15s;
+      text-align:center;
+    }
+    .font-btn.active { border-color:var(--gold); color:var(--gold); }
+
+    .font-row { display:flex; gap:8px; margin-top:8px; }
+    .font-btn {
+      flex:1; padding:8px 6px; font-size:13px;
+      cursor:pointer; border-radius:var(--radius-sm);
+      border:1px solid var(--border); background:var(--surface2);
+      color:var(--text-muted); transition:border .15s, color .15s;
+      text-align:center;
+    }
+    .font-btn.active { border-color:var(--gold); color:var(--gold); }
   </style>
 </head>
 <body>
@@ -398,6 +418,17 @@
       <button class="flag-btn" id="flag-tr" title="Türkçe">🇹🇷</button>
       <button class="flag-btn active" id="flag-ar" title="العربية">🇸🇦</button>
     </div>
+
+    <!-- Police -->
+    <div>
+      <div class="section-title" data-i18n="fontTitle">Police arabe</div>
+      <div class="font-row">
+        <button class="font-btn active" id="font-amiri" onclick="setFont('Amiri')" style="font-family:'Amiri',serif;">أ Amiri</button>
+        <button class="font-btn" id="font-scheherazade" style="font-family:'Scheherazade New',serif;">شهرزاد — Scheherazade</button>
+      </div>
+    </div>
+
+    <hr class="sep" />
 
     <!-- Bab -->
     <div>
@@ -595,6 +626,11 @@
     <!-- Taille texte -->
     <div>
       <div class="section-title" data-i18n="textSize">Taille du texte</div>
+      <div class="color-group-label" style="margin-bottom:6px;" data-i18n="fontChoice">Police d'écriture</div>
+      <div class="font-row">
+        <button class="font-btn active" id="font-amiri" style="font-family:'Amiri',serif;">أميري — Amiri</button>
+        <button class="font-btn" id="font-scheherazade" style="font-family:'Scheherazade New',serif;">شهرزاد — Scheherazade</button>
+      </div>
       <div class="slider-row" style="margin-bottom:10px;">
         <label data-i18n="babLabel">Bab</label>
         <input type="range" id="fs-bab" min="14" max="80" value="38" step="2" />
@@ -665,6 +701,7 @@ let boxColor    = '#FFFFFF';
 let sourceBgColor = '#FFFFFF';
 let sourceColor = '#111111';
 let babColor      = '#111111';
+let arabicFont    = 'Amiri'; // police arabe active
 let hadithWidth   = 100; // % de la largeur disponible
 let babBgColor    = '#FFFFFF';
 let outlineBab    = false;
@@ -1004,6 +1041,19 @@ document.getElementById('outline-bab-size').addEventListener('input', function()
 });
 
 // Taille Bab
+document.getElementById('font-amiri').addEventListener('click', function() {
+  arabicFont = 'Amiri';
+  this.classList.add('active');
+  document.getElementById('font-scheherazade').classList.remove('active');
+  render();
+});
+document.getElementById('font-scheherazade').addEventListener('click', function() {
+  arabicFont = 'Scheherazade New';
+  this.classList.add('active');
+  document.getElementById('font-amiri').classList.remove('active');
+  render();
+});
+
 document.getElementById('hadith-width').addEventListener('input', function() {
   hadithWidth = parseInt(this.value);
   document.getElementById('hadith-width-out').textContent = this.value + '%';
@@ -1156,7 +1206,7 @@ function render() {
   drawBackground();
 
   /* 2. Mesure hadith */
-  ctx.font = `bold ${fsH}px 'Amiri', serif`;
+  ctx.font = `bold ${fsH}px '${arabicFont}', serif`;
   ctx.direction = 'rtl';
   const words = hadithText.split(' ');
   let line = '', tmpLines = [];
@@ -1171,7 +1221,7 @@ function render() {
   /* 3. Mesure Bab */
   let babMeasuredLines = 0;
   if (babText) {
-    ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+    ctx.font = `bold ${fsBab}px '${arabicFont}', serif`;
     const bw = babText.split(' ');
     let bl = '', bls = [];
     for (const w of bw) {
@@ -1210,10 +1260,10 @@ function render() {
 
   /* 5. Dessin Bab */
   if (babText) {
-    ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+    ctx.font = `bold ${fsBab}px '${arabicFont}', serif`;
     ctx.textAlign = 'center'; ctx.direction = 'rtl';
     if (babBgColor !== 'none') {
-      ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+      ctx.font = `bold ${fsBab}px '${arabicFont}', serif`;
       const babMetrics = ctx.measureText('أ');
       const babAscent  = (babMetrics.actualBoundingBoxAscent  || fsBab * 0.85);
       const babDescent = (babMetrics.actualBoundingBoxDescent || fsBab * 0.2) * 2.5; // x2.5 pour les descendantes arabes
@@ -1240,13 +1290,13 @@ function render() {
       wrapTextStroke(babText, W/2, babCY, textMaxW, babLineH);
     }
     ctx.fillStyle = babColor;
-    ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+    ctx.font = `bold ${fsBab}px '${arabicFont}', serif`;
     wrapText(babText, W/2, babCY, textMaxW, babLineH);
   }
 
   /* 6. Fond hadith */
   if (boxColor !== 'none') {
-    ctx.font = `bold ${fsH}px 'Amiri', serif`;
+    ctx.font = `bold ${fsH}px '${arabicFont}', serif`;
     const hMetrics = ctx.measureText('أ');
     const hAscent  = hMetrics.actualBoundingBoxAscent  || fsH * 0.85;
     const hDescent = hMetrics.actualBoundingBoxDescent || fsH * 0.2;
@@ -1264,7 +1314,7 @@ function render() {
 
   /* 7. Dessin hadith */
   ctx.textAlign = 'center'; ctx.direction = 'rtl';
-  ctx.font = `bold ${fsH}px 'Amiri', serif`;
+  ctx.font = `bold ${fsH}px '${arabicFont}', serif`;
   let lineCount;
   if (!sourceText || sourceMode === 'separate') {
     if (outlineHadith) {
@@ -1284,7 +1334,7 @@ function render() {
       const fullText = hadithText + ' ' + sourceText;
       ctx.fillStyle = textColor;
       ctx.textAlign = 'center'; ctx.direction = 'rtl';
-      ctx.font = `bold ${fsH}px 'Amiri', serif`;
+      ctx.font = `bold ${fsH}px '${arabicFont}', serif`;
       if (boxColor !== 'none') {
         const words2 = fullText.split(' ');
         let line2 = '', tmpLines2 = [];
@@ -1305,13 +1355,13 @@ function render() {
         ctx.restore();
       }
       ctx.fillStyle = textColor;
-      ctx.font = `bold ${fsH}px 'Amiri', serif`;
+      ctx.font = `bold ${fsH}px '${arabicFont}', serif`;
       wrapText(fullText, W/2, textCY, textMaxW, lineH);
     } else {
       const sourceY = textCY + (lineCount * lineH) / 2 + fsS * 2.4;
       if (sourceBgColor !== 'none') {
         ctx.save();
-        ctx.font = `${fsS}px 'Amiri', serif`;
+        ctx.font = `${fsS}px '${arabicFont}', serif`;
         const metrics = ctx.measureText(sourceText);
         const ascent  = metrics.actualBoundingBoxAscent  || fsS * 0.85;
         const descent = metrics.actualBoundingBoxDescent || fsS * 0.25;
@@ -1322,7 +1372,7 @@ function render() {
         ctx.fill();
         ctx.restore();
       }
-      ctx.font = `${fsS}px 'Amiri', serif`;
+      ctx.font = `${fsS}px '${arabicFont}', serif`;
       ctx.direction = 'rtl';
       if (outlineSource) {
         ctx.strokeStyle = '#000000'; ctx.lineWidth = outlineSourceW * 2;
@@ -1349,7 +1399,7 @@ const LANGS = {
   ar: {
     appTitle: '✦ منشئ صور الأحاديث ✦',
     appSub: 'اكتب حديثًا وحمّل الصورة بتنسيق 4:5 (800 × 1000)',
-    hadithWidth: 'عرض', babTitle: 'باب (فصل)', babColor: 'لون الباب', babOutlineLabel: 'حدود الباب',
+    fontTitle: 'الخط العربي', hadithWidth: 'عرض', babTitle: 'باب (فصل)', babColor: 'لون الباب', babOutlineLabel: 'حدود الباب',
     babBgLabel: 'خلفية الباب', babLabel: 'باب',
     hadithTitle: 'نص الحديث', sourceTitle: 'المصدر / المرجع',
     attached: '↩ ملحقة بالنص', separate: '↕ منفصلة (أسفل)',
@@ -1370,7 +1420,7 @@ const LANGS = {
   tr: {
     appTitle: '✦ Hadis Görseli Oluşturucu ✦',
     appSub: 'Bir hadis yazın ve 4:5 formatında görsel indirin (800 × 1000)',
-    hadithWidth: 'Genişlik', babTitle: 'Bab (Bölüm)', babColor: 'Bab Rengi', babOutlineLabel: 'Bab Konturu',
+    fontTitle: 'Arapça Font', hadithWidth: 'Genişlik', babTitle: 'Bab (Bölüm)', babColor: 'Bab Rengi', babOutlineLabel: 'Bab Konturu',
     babBgLabel: 'Bab Arka Planı', babLabel: 'Bab',
     hadithTitle: 'Hadis Metni', sourceTitle: 'Kaynak / Referans',
     attached: '↩ Metne Ekli', separate: '↕ Ayrı (Alt)',
@@ -1391,6 +1441,17 @@ const LANGS = {
 };
 
 let currentLang = 'ar';
+
+function setFont(font) {
+  arabicFont = font;
+  document.getElementById('font-amiri').classList.toggle('active', font === 'Amiri');
+  document.getElementById('font-scheherazade').classList.toggle('active', font === 'Scheherazade New');
+  // Mettre à jour le placeholder du textarea et input bab
+  document.getElementById('hadith').style.fontFamily = `'${font}', serif`;
+  document.getElementById('bab').style.fontFamily    = `'${font}', serif`;
+  document.getElementById('source').style.fontFamily = `'${font}', serif`;
+  render();
+}
 
 function applyLang(lang) {
   currentLang = lang;
