@@ -1121,43 +1121,21 @@ function drawLogo(logoSize) {
 function render() {
   const hadithText = document.getElementById('hadith').value.trim() || '...';
   const sourceText = document.getElementById('source').value.trim();
-  const fsH        = parseInt(document.getElementById('fs-hadith').value);
-  const fsS        = parseInt(document.getElementById('fs-source').value);
-  const logoSize   = parseInt(document.getElementById('logo-size').value);
+  const babText    = document.getElementById('bab').value.trim();
+  const fsH      = parseInt(document.getElementById('fs-hadith').value);
+  const fsS      = parseInt(document.getElementById('fs-source').value);
+  const fsBab    = parseInt(document.getElementById('fs-bab').value);
+  const logoSize = parseInt(document.getElementById('logo-size').value);
+
+  const MARGIN_PX = 120;
+  const textMaxW  = W - MARGIN_PX * 2;
+  const lineH     = fsH * 1.75;
+  const babLineH  = fsBab * 1.6;
 
   /* 1. Fond */
   drawBackground();
 
-  /* 2. Cadre et ornements supprimés */
-
-  /* 4. Texte hadith */
-  const MARGIN_PX = 120;
-  const babText  = document.getElementById('bab').value.trim();
-  const fsBab    = parseInt(document.getElementById('fs-bab').value);
-  const babLineH = fsBab * 1.6;
-
-  // Calcul hauteur Bab pour repositionner le bloc
-  let babLines = 0;
-  if (babText) {
-    ctx.font = `bold ${fsBab}px 'Amiri', serif`;
-    const babWords = babText.split(' ');
-    let bl = '', bLines = [];
-    for (const w of babWords) {
-      const t = bl ? bl + ' ' + w : w;
-      if (ctx.measureText(t).width > textMaxW && bl) { bLines.push(bl); bl = w; }
-      else bl = t;
-    }
-    if (bl) bLines.push(bl);
-    babLines = bLines.length;
-  }
-
-  const babBlockH = babLines > 0 ? babLines * babLineH + 20 : 0;
-  const textCY = H * 0.50 + babBlockH / 2; // hadith décalé vers le bas si Bab présent
-  const babCY  = textCY - (measuredLines * lineH) / 2 - babBlockH / 2 - 10;
-  const textMaxW = W - MARGIN_PX * 2;
-  const lineH = fsH * 1.75;
-
-  // Mesure le nombre de lignes sans dessiner
+  /* 2. Mesure hadith */
   ctx.font = `bold ${fsH}px 'Amiri', serif`;
   ctx.direction = 'rtl';
   const words = hadithText.split(' ');
@@ -1170,25 +1148,55 @@ function render() {
   if (line) tmpLines.push(line);
   const measuredLines = tmpLines.length;
 
-  // Fond blanc si option active
-  /* Bab — au-dessus du hadith */
+  /* 3. Mesure Bab */
+  let babMeasuredLines = 0;
   if (babText) {
     ctx.font = `bold ${fsBab}px 'Amiri', serif`;
-    ctx.direction = 'rtl'; ctx.textAlign = 'center';
+    const bw = babText.split(' ');
+    let bl = '', bls = [];
+    for (const w of bw) {
+      const t = bl ? bl + ' ' + w : w;
+      if (ctx.measureText(t).width > textMaxW && bl) { bls.push(bl); bl = w; }
+      else bl = t;
+    }
+    if (bl) bls.push(bl);
+    babMeasuredLines = bls.length;
+  }
+
+  /* 4. Positions verticales */
+  const GAP_BAB = 90; // espace entre Bab et Hadith (compense les paddings des deux boites)
+  const babBlockH = babMeasuredLines > 0 ? babMeasuredLines * babLineH + GAP_BAB : 0;
+  const hadithBlockH = measuredLines * lineH;
+  const totalH = babBlockH + hadithBlockH;
+  const blockStartY = H / 2 - totalH / 2;
+  const babCY  = blockStartY + babMeasuredLines * babLineH / 2;
+  const textCY = blockStartY + babBlockH + hadithBlockH / 2;
+
+  /* 5. Dessin Bab */
+  if (babText) {
+    ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+    ctx.textAlign = 'center'; ctx.direction = 'rtl';
     if (babBgColor !== 'none') {
-      const bWords = babText.split(' ');
-      let bl2 = '', bL2 = [];
-      for (const w of bWords) {
-        const t = bl2 ? bl2+' '+w : w;
-        if (ctx.measureText(t).width > textMaxW && bl2) { bL2.push(bl2); bl2=w; } else bl2=t;
+      ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+      const babMetrics = ctx.measureText('أ');
+      const babAscent  = babMetrics.actualBoundingBoxAscent  || fsBab * 0.85;
+      const babDescent = babMetrics.actualBoundingBoxDescent || fsBab * 0.2;
+      const bPX = 30, bPY = 18;
+      // Mesure la largeur réelle de chaque ligne pour prendre la plus large
+      const bwLines = babText.split(' '); let bbl='', bblArr=[];
+      for (const w of bwLines) {
+        const t = bbl ? bbl+' '+w : w;
+        if (ctx.measureText(t).width > textMaxW && bbl) { bblArr.push(bbl); bbl=w; } else bbl=t;
       }
-      if (bl2) bL2.push(bl2);
-      const bPX=30, bPY=16;
-      const bW = textMaxW + bPX*2;
-      const bH = bL2.length * babLineH + bPY*2;
+      if (bbl) bblArr.push(bbl);
+      const maxBabW = Math.max(...bblArr.map(l => ctx.measureText(l).width));
+      const firstBaselineBab = babCY - babMeasuredLines * babLineH / 2 + babLineH * 0.6;
+      const lastBaselineBab  = firstBaselineBab + (babMeasuredLines - 1) * babLineH;
+      const boxTopBab    = firstBaselineBab - babAscent - bPY;
+      const boxBottomBab = lastBaselineBab  + babDescent + bPY;
       ctx.save();
       ctx.fillStyle = babBgColor;
-      roundRect(ctx, W/2-bW/2, babCY - bL2.length*babLineH/2 - bPY, bW, bH, 10);
+      roundRect(ctx, W/2 - (maxBabW/2 + bPX), boxTopBab, maxBabW + bPX*2, boxBottomBab - boxTopBab, 10);
       ctx.fill(); ctx.restore();
     }
     if (outlineBab) {
@@ -1200,21 +1208,25 @@ function render() {
     wrapText(babText, W/2, babCY, textMaxW, babLineH);
   }
 
+  /* 6. Fond hadith */
   if (boxColor !== 'none') {
-    const tbPadX = 36, tbPadY = 32;
-    const tbW = textMaxW + tbPadX * 2;
-    const tbH = measuredLines * lineH + tbPadY * 2;
-    const tbX = W/2 - tbW/2;
-    const tbY = textCY - measuredLines * lineH / 2 - tbPadY;
+    ctx.font = `bold ${fsH}px 'Amiri', serif`;
+    const hMetrics = ctx.measureText('أ');
+    const hAscent  = hMetrics.actualBoundingBoxAscent  || fsH * 0.85;
+    const hDescent = hMetrics.actualBoundingBoxDescent || fsH * 0.2;
+    const tbPadX = 36, tbPadY = 24;
+    const firstBaselineH = textCY - measuredLines * lineH / 2 + lineH * 0.6;
+    const lastBaselineH  = firstBaselineH + (measuredLines - 1) * lineH;
+    const boxTopH    = firstBaselineH - hAscent - tbPadY;
+    const boxBottomH = lastBaselineH  + hDescent + tbPadY;
     ctx.save();
     ctx.fillStyle = boxColor;
-    roundRect(ctx, tbX, tbY, tbW, tbH, 14);
+    roundRect(ctx, W/2 - (textMaxW + tbPadX*2)/2, boxTopH, textMaxW + tbPadX*2, boxBottomH - boxTopH, 14);
     ctx.fill();
     ctx.restore();
   }
 
-  // Dessin du texte — seulement si source séparée ou pas de source
-  // (si attachée, on dessine hadith+source ensemble dans le bloc source)
+  /* 7. Dessin hadith */
   ctx.textAlign = 'center'; ctx.direction = 'rtl';
   ctx.font = `bold ${fsH}px 'Amiri', serif`;
   let lineCount;
@@ -1230,16 +1242,13 @@ function render() {
     lineCount = measuredLines;
   }
 
-  /* 5. Source */
+  /* 8. Source */
   if (sourceText) {
     if (sourceMode === 'attached') {
-      // Attachée : hadith + source ensemble en un seul bloc
       const fullText = hadithText + ' ' + sourceText;
       ctx.fillStyle = textColor;
       ctx.textAlign = 'center'; ctx.direction = 'rtl';
       ctx.font = `bold ${fsH}px 'Amiri', serif`;
-
-      // Recalculer le fond blanc avec texte complet
       if (boxColor !== 'none') {
         const words2 = fullText.split(' ');
         let line2 = '', tmpLines2 = [];
@@ -1263,21 +1272,17 @@ function render() {
       ctx.font = `bold ${fsH}px 'Amiri', serif`;
       wrapText(fullText, W/2, textCY, textMaxW, lineH);
     } else {
-      // Séparée : en bas, taille différente
-      const sourceY = H * 0.42 + (lineCount * fsH * 1.75) / 2 + fsS * 2.4;
+      const sourceY = textCY + (lineCount * lineH) / 2 + fsS * 2.4;
       if (sourceBgColor !== 'none') {
-        const sPadX = 30, sPadY = 16;
         ctx.save();
         ctx.font = `${fsS}px 'Amiri', serif`;
-        const measW = ctx.measureText(sourceText).width + sPadX * 2;
-        // Mesure précise des ascendantes/descendantes
         const metrics = ctx.measureText(sourceText);
         const ascent  = metrics.actualBoundingBoxAscent  || fsS * 0.85;
         const descent = metrics.actualBoundingBoxDescent || fsS * 0.25;
-        const boxH = ascent + descent + sPadY * 2;
-        const boxY = sourceY - ascent - sPadY;
+        const sPadX = 30, sPadY = 16;
+        const measW = ctx.measureText(sourceText).width + sPadX * 2;
         ctx.fillStyle = sourceBgColor;
-        roundRect(ctx, W/2 - measW/2, boxY, measW, boxH, 10);
+        roundRect(ctx, W/2 - measW/2, sourceY - ascent - sPadY, measW, ascent + descent + sPadY * 2, 10);
         ctx.fill();
         ctx.restore();
       }
@@ -1293,64 +1298,15 @@ function render() {
     }
   }
 
-  /* 6. Logo */
+  /* 9. Logo */
   drawLogo(logoSize);
 
-  /* 7. Footer */
+  /* 10. Footer */
   if (footerImg) {
     ctx.drawImage(footerImg, 0, H - FOOTER_H, FOOTER_W, FOOTER_H);
   }
-
 }
 
-
-/* ══════════════════════════════════════════════
-   🌐 TRADUCTIONS
-   ══════════════════════════════════════════════ */
-const LANGS = {
-  ar: {
-    appTitle: '✦ منشئ صور الأحاديث ✦',
-    appSub: 'اكتب حديثًا وحمّل الصورة بتنسيق 4:5 (800 × 1000)',
-    hadithTitle: 'نص الحديث', sourceTitle: 'المصدر / المرجع',
-    attached: '↩ ملحقة بالنص', separate: '↕ منفصلة (أسفل)',
-    hadithColor: 'لون النص', hadithOutlineLabel: 'حدود النص',
-    outline: '◻ حدود', hadithBg: 'خلفية النص',
-    presetBg: 'خلفيات جاهزة', myBg: 'خلفياتي (صور)',
-    uploadBg: 'أو تحميل خلفية', logoPos: 'موضع الشعار',
-    logoSize: 'حجم الشعار', footerTitle: 'تذييل (أسفل الصورة)',
-    sourceColor: 'لون المصدر', sourceOutlineLabel: 'حدود المصدر',
-    sourceBgLabel: 'خلفية المصدر', textSize: 'حجم الخط',
-    hadithLabel: 'الحديث', sourceLabel: 'المصدر',
-    small: 'صغير', big: 'كبير',
-    noLogo: '✕ بدون شعار', noFooter: '✕ بدون تذييل',
-    posBottom: 'أسفل · وسط', posTopRight: 'أعلى · يمين', posTopLeft: 'أعلى · يسار',
-    download: '⬇ تحميل الصورة (800 × 1000)',
-    uploadPlaceholder: '＋ انقر لتحميل صورة (JPG, PNG…)',
-  },
-  tr: {
-    appTitle: '✦ Hadis Görseli Oluşturucu ✦',
-    appSub: 'Bir hadis yazın ve 4:5 formatında görsel indirin (800 × 1000)',
-    hadithTitle: 'Hadis Metni', sourceTitle: 'Kaynak / Referans',
-    attached: '↩ Metne Ekli', separate: '↕ Ayrı (Alt)',
-    hadithColor: 'Metin Rengi', hadithOutlineLabel: 'Metin Konturu',
-    outline: '◻ Kontur', hadithBg: 'Metin Arka Planı',
-    presetBg: 'Hazır Arka Planlar', myBg: 'Kendi Arka Planlarım',
-    uploadBg: 'Veya Arka Plan Yükle', logoPos: 'Logo Konumu',
-    logoSize: 'Logo Boyutu', footerTitle: 'Alt Bilgi (Görsel Altı)',
-    sourceColor: 'Kaynak Rengi', sourceOutlineLabel: 'Kaynak Konturu',
-    sourceBgLabel: 'Kaynak Arka Planı', textSize: 'Yazı Boyutu',
-    babTitle: 'Bab (Bölüm)', babColor: 'Bab Rengi', babOutlineLabel: 'Bab Konturu',
-    babBgLabel: 'Bab Arka Planı', babLabel: 'Bab',
-    hadithLabel: 'Hadis', sourceLabel: 'Kaynak',
-    small: 'Küçük', big: 'Büyük',
-    noLogo: '✕ Logosuz', noFooter: '✕ Alt Bilgi Yok',
-    posBottom: 'Alt · Orta', posTopRight: 'Üst · Sağ', posTopLeft: 'Üst · Sol',
-    download: '⬇ Görseli İndir (800 × 1000)',
-    uploadPlaceholder: '＋ Görsel yüklemek için tıklayın (JPG, PNG…)',
-  }
-};
-
-let currentLang = 'ar';
 
 function applyLang(lang) {
   currentLang = lang;
