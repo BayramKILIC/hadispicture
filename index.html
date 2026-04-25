@@ -491,8 +491,7 @@ let customBgImg = null;
 let textColor   = '#F5E8C0';
 
 let footerImg   = null;
-let textBox     = false;
-let textBox     = false; // fond blanc derriere le texte // image footer active (null = pas de footer)
+let textBox     = false; // fond blanc derriere le texte
 
 const FOOTERS = [
   { label: 'Footer 1', src: 'footer/footer1.jpg' },
@@ -713,13 +712,6 @@ document.querySelectorAll('.pos-btn').forEach(btn =>
 
 document.getElementById('logo-size').addEventListener('input', function () {
   document.getElementById('logo-size-out').textContent = this.value + 'px';
-  render();
-});
-
-document.getElementById('textbox-btn').addEventListener('click', function () {
-  textBox = !textBox;
-  this.textContent = textBox ? '◼ Fond blanc actif' : '◻ Fond blanc derrière le texte';
-  this.classList.toggle('active', textBox);
   render();
 });
 
