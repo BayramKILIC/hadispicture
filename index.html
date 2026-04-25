@@ -321,6 +321,15 @@
       color: var(--gold);
       background: var(--surface);
     }
+
+    .color-dot-disabled { opacity: 0.3; pointer-events: none; }
+    .source-bg-btn { width:100%; margin-top:8px; padding:9px; font-size:12px;
+      font-family:'Inter',sans-serif; cursor:pointer; border-radius:var(--radius-sm);
+      border:1px solid var(--border); background:var(--surface2); color:var(--text-muted);
+      transition:border .15s,color .15s; }
+    .source-bg-btn.active { border-color:var(--gold); color:var(--gold); }
+    .source-bg-btn:disabled { opacity:0.3; cursor:not-allowed; }
+    .color-group-label { font-size:11px; color:var(--text-muted); margin-bottom:5px; }
   </style>
 </head>
 <body>
@@ -349,6 +358,7 @@
         <button class="toggle-btn" id="source-attached">↩ Attachée au texte</button>
         <button class="toggle-btn active" id="source-separate">↕ Séparée (bas)</button>
       </div>
+      <button class="source-bg-btn" id="source-bg-btn">◻ Fond blanc derrière la source</button>
     </div>
 
     <hr class="sep" />
@@ -429,9 +439,10 @@
 
     <hr class="sep" />
 
-    <!-- Couleur texte -->
+    <!-- Couleurs -->
     <div>
-      <div class="section-title">Couleur du texte</div>
+      <div class="section-title">Couleurs</div>
+      <div class="color-group-label">Texte hadith</div>
       <div class="dot-row" id="color-row">
         <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
         <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
@@ -439,13 +450,20 @@
         <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
         <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
         <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
+        <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
+        <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
       </div>
-    </div>
-
-    <!-- Fond texte -->
-    <div>
-      <div class="section-title">Fond du texte</div>
-      <button class="no-footer-btn" id="textbox-btn">◻ Fond blanc derrière le texte</button>
+      <div class="color-group-label" style="margin-top:12px;">Texte source</div>
+      <div class="dot-row" id="color-source-row">
+        <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
+        <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
+        <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
+        <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
+        <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
+        <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
+        <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+      </div>
     </div>
 
     <!-- Fond texte -->
@@ -513,7 +531,9 @@ let customBgImg = null;
 let textColor   = '#F5E8C0';
 
 let footerImg   = null;
-let textBox     = false; // fond blanc derriere le texte
+let textBox     = false;
+let sourceBg    = false;
+let sourceColor = '#F5E8C0';
 let sourceMode  = 'separate'; // 'attached' ou 'separate'
 
 const FOOTERS = [
@@ -752,14 +772,30 @@ document.getElementById('no-logo-btn').addEventListener('click', function () {
   render();
 });
 
-document.querySelectorAll('.color-dot').forEach(dot =>
+document.querySelectorAll('#color-row .color-dot').forEach(dot =>
   dot.addEventListener('click', () => {
-    document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+    document.querySelectorAll('#color-row .color-dot').forEach(d => d.classList.remove('active'));
     dot.classList.add('active');
     textColor = dot.dataset.color;
     render();
   })
 );
+
+document.querySelectorAll('#color-source-row .color-dot').forEach(dot =>
+  dot.addEventListener('click', () => {
+    document.querySelectorAll('#color-source-row .color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    sourceColor = dot.dataset.color;
+    render();
+  })
+);
+
+document.getElementById('source-bg-btn').addEventListener('click', function() {
+  sourceBg = !sourceBg;
+  this.textContent = sourceBg ? '◼ Fond blanc source actif' : '◻ Fond blanc derrière la source';
+  this.classList.toggle('active', sourceBg);
+  render();
+});
 
 ['fs-hadith', 'fs-source'].forEach(id =>
   document.getElementById(id).addEventListener('input', function () {
@@ -775,12 +811,14 @@ document.getElementById('source-attached').addEventListener('click', function() 
   sourceMode = 'attached';
   this.classList.add('active');
   document.getElementById('source-separate').classList.remove('active');
+  document.getElementById('source-bg-btn').disabled = true;
   render();
 });
 document.getElementById('source-separate').addEventListener('click', function() {
   sourceMode = 'separate';
   this.classList.add('active');
   document.getElementById('source-attached').classList.remove('active');
+  document.getElementById('source-bg-btn').disabled = false;
   render();
 });
 
@@ -954,7 +992,23 @@ function render() {
     } else {
       // Séparée : en bas, taille différente
       const sourceY = H * 0.42 + (lineCount * fsH * 1.75) / 2 + fsS * 2.4;
-      ctx.fillStyle = textColor;
+      if (sourceBg) {
+        const sPadX = 30, sPadY = 16;
+        ctx.save();
+        ctx.font = `${fsS}px 'Amiri', serif`;
+        const measW = ctx.measureText(sourceText).width + sPadX * 2;
+        // Mesure précise des ascendantes/descendantes
+        const metrics = ctx.measureText(sourceText);
+        const ascent  = metrics.actualBoundingBoxAscent  || fsS * 0.85;
+        const descent = metrics.actualBoundingBoxDescent || fsS * 0.25;
+        const boxH = ascent + descent + sPadY * 2;
+        const boxY = sourceY - ascent - sPadY;
+        ctx.fillStyle = 'rgba(255,255,255,1)';
+        roundRect(ctx, W/2 - measW/2, boxY, measW, boxH, 10);
+        ctx.fill();
+        ctx.restore();
+      }
+      ctx.fillStyle = sourceColor;
       ctx.font = `${fsS}px 'Amiri', serif`;
       ctx.direction = 'rtl';
       ctx.fillText(sourceText, W/2, sourceY);
