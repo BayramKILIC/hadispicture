@@ -1184,9 +1184,9 @@ function render() {
     if (babBgColor !== 'none') {
       ctx.font = `bold ${fsBab}px 'Amiri', serif`;
       const babMetrics = ctx.measureText('أ');
-      const babAscent  = babMetrics.actualBoundingBoxAscent  || fsBab * 0.85;
-      const babDescent = babMetrics.actualBoundingBoxDescent || fsBab * 0.2;
-      const bPX = 30, bPY = 18;
+      const babAscent  = (babMetrics.actualBoundingBoxAscent  || fsBab * 0.85);
+      const babDescent = (babMetrics.actualBoundingBoxDescent || fsBab * 0.2) * 2.5; // x2.5 pour les descendantes arabes
+      const bPX = 30, bPY = 22;
       // Mesure la largeur réelle de chaque ligne pour prendre la plus large
       const bwLines = babText.split(' '); let bbl='', bblArr=[];
       for (const w of bwLines) {
