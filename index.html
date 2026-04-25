@@ -1163,12 +1163,17 @@ function render() {
     babMeasuredLines = bls.length;
   }
 
-  /* 4. Positions verticales */
-  const GAP_BAB = 90; // espace entre Bab et Hadith (compense les paddings des deux boites)
-  const babBlockH = babMeasuredLines > 0 ? babMeasuredLines * babLineH + GAP_BAB : 0;
+  /* 4. Positions verticales — centrage dans l'espace disponible */
+  const GAP_BAB = 90;
+  const babBlockH    = babMeasuredLines > 0 ? babMeasuredLines * babLineH + GAP_BAB : 0;
   const hadithBlockH = measuredLines * lineH;
-  const totalH = babBlockH + hadithBlockH;
-  const blockStartY = H / 2 - totalH / 2;
+  const totalH       = babBlockH + hadithBlockH;
+
+  // 300px réservés en bas pour logo + source
+  const availH      = H - 300;
+  const blockCY     = availH / 2;
+  const blockStartY = blockCY - totalH / 2;
+
   const babCY  = blockStartY + babMeasuredLines * babLineH / 2;
   const textCY = blockStartY + babBlockH + hadithBlockH / 2;
 
