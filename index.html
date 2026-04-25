@@ -420,6 +420,18 @@
       </div>
     </div>
 
+    <!-- Fond texte -->
+    <div>
+      <div class="section-title">Fond du texte</div>
+      <button class="no-footer-btn" id="textbox-btn">◻ Fond blanc derrière le texte</button>
+    </div>
+
+    <!-- Fond texte -->
+    <div>
+      <div class="section-title">Fond du texte</div>
+      <button class="no-footer-btn" id="textbox-btn">◻ Fond blanc derrière le texte</button>
+    </div>
+
     <!-- Taille texte -->
     <div>
       <div class="section-title">Taille du texte</div>
@@ -478,7 +490,9 @@ let currentBg   = { type: 'gradient', index: 0 };
 let customBgImg = null;
 let textColor   = '#F5E8C0';
 
-let footerImg   = null; // image footer active (null = pas de footer)
+let footerImg   = null;
+let textBox     = false;
+let textBox     = false; // fond blanc derriere le texte // image footer active (null = pas de footer)
 
 const FOOTERS = [
   { label: 'Footer 1', src: 'footer/footer1.jpg' },
@@ -702,6 +716,20 @@ document.getElementById('logo-size').addEventListener('input', function () {
   render();
 });
 
+document.getElementById('textbox-btn').addEventListener('click', function () {
+  textBox = !textBox;
+  this.textContent = textBox ? '◼ Fond blanc actif' : '◻ Fond blanc derrière le texte';
+  this.classList.toggle('active', textBox);
+  render();
+});
+
+document.getElementById('textbox-btn').addEventListener('click', function () {
+  textBox = !textBox;
+  this.textContent = textBox ? '◼ Fond blanc actif' : '◻ Fond blanc derrière le texte';
+  this.classList.toggle('active', textBox);
+  render();
+});
+
 document.getElementById('no-logo-btn').addEventListener('click', function () {
   showLogo = !showLogo;
   this.textContent = showLogo ? '✕ Pas de logo' : '✓ Afficher le logo';
@@ -819,11 +847,43 @@ function render() {
   ctx.fillText('❖ ─── ✦ ─── ❖', W/2, H - 68);
 
   /* 4. Texte hadith */
-  ctx.fillStyle = textColor;
+  const MARGIN_PX = 120;
+  const textCY = H * 0.42;
+  const textMaxW = W - MARGIN_PX * 2;
+  const lineH = fsH * 1.75;
+
+  // Mesure le nombre de lignes sans dessiner
+  ctx.font = `bold ${fsH}px 'Amiri', serif`;
+  ctx.direction = 'rtl';
+  const words = hadithText.split(' ');
+  let line = '', lineCount = 0, tmpLines = [];
+  for (const w of words) {
+    const t = line ? line + ' ' + w : w;
+    if (ctx.measureText(t).width > textMaxW && line) { tmpLines.push(line); line = w; }
+    else line = t;
+  }
+  if (line) tmpLines.push(line);
+  const measuredLines = tmpLines.length;
+
+  // Fond blanc si option active
+  if (textBox) {
+    const tbPadX = 36, tbPadY = 32;
+    const tbW = textMaxW + tbPadX * 2;
+    const tbH = measuredLines * lineH + tbPadY * 2;
+    const tbX = W/2 - tbW/2;
+    const tbY = textCY - measuredLines * lineH / 2 - tbPadY;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,1)';
+    roundRect(ctx, tbX, tbY, tbW, tbH, 14);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Dessin du texte
+  ctx.fillStyle = textBox ? '#1a1a1a' : textColor;
   ctx.textAlign = 'center'; ctx.direction = 'rtl';
   ctx.font = `bold ${fsH}px 'Amiri', serif`;
-  const MARGIN_PX = 120; // 80px de chaque cote
-  const lineCount = wrapText(hadithText, W/2, H * 0.42, W - MARGIN_PX * 2, fsH * 1.75);
+  const lineCount = wrapText(hadithText, W/2, textCY, textMaxW, lineH);
 
   /* 5. Source — positionnée dynamiquement sous le hadith */
   if (sourceText) {
