@@ -1170,9 +1170,9 @@ function render() {
   const hadithBlockH = measuredLines * lineH;
   const totalH       = babBlockH + hadithBlockH;
 
-  // 300px réservés en bas pour logo + source
-  const availH      = H - 300;
-  const blockCY     = availH / 2;
+  // Contenu centré dans les 650px du haut — 350px réservés en bas (source + logo + footer)
+  const CONTENT_ZONE = 850;
+  const blockCY     = CONTENT_ZONE / 2;
   const blockStartY = blockCY - totalH / 2;
 
   const babCY  = blockStartY + babMeasuredLines * babLineH / 2;
