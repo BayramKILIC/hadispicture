@@ -784,21 +784,14 @@ function wrapText(text, cx, cy, maxW, lineH) {
 
 function drawLogo(logoSize) {
   if (!logoImg || !showLogo) return;
-  const margin = 44, pad = 14;
+  const margin = 44;
   let lx, ly;
-  if (logoPos === 'bottom-center') { lx = W/2 - logoSize/2; ly = H - margin - pad - logoSize; }
-  else if (logoPos === 'top-right') { lx = W - margin - pad - logoSize; ly = margin + pad; }
-  else { lx = margin + pad; ly = margin + pad; }
+  if (logoPos === 'bottom-center') { lx = W/2 - logoSize/2; ly = H - margin - logoSize; }
+  else if (logoPos === 'top-right') { lx = W - margin - logoSize; ly = margin; }
+  else { lx = margin; ly = margin; }
 
-  ctx.save();
-  // Ombre douce derrière le logo
-  ctx.beginPath(); ctx.arc(lx + logoSize/2, ly + logoSize/2, logoSize/2 + 6, 0, Math.PI*2);
-  ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill();
-  // Logo découpé en cercle
-  ctx.beginPath(); ctx.arc(lx + logoSize/2, ly + logoSize/2, logoSize/2, 0, Math.PI*2);
-  ctx.clip();
+  // Affichage direct du PNG avec transparence — aucun effet
   ctx.drawImage(logoImg, lx, ly, logoSize, logoSize);
-  ctx.restore();
 }
 
 function render() {
