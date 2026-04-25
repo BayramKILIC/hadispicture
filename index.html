@@ -303,6 +303,24 @@
       transition: border 0.15s, color 0.15s;
     }
     .no-footer-btn.active { border-color: var(--gold); color: var(--gold); }
+
+    /* -- Toggle attaché/séparé -- */
+    .toggle-row { display: flex; gap: 6px; margin-top: 8px; }
+    .toggle-btn {
+      flex: 1; padding: 7px 10px; font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text-muted);
+      transition: border 0.15s, color 0.15s, background 0.15s;
+    }
+    .toggle-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--surface);
+    }
   </style>
 </head>
 <body>
@@ -327,6 +345,10 @@
     <div>
       <div class="section-title">Source / Référence</div>
       <input type="text" id="source" value="رواه البخاري ومسلم" placeholder="رواه البخاري" />
+      <div class="toggle-row">
+        <button class="toggle-btn" id="source-attached">↩ Attachée au texte</button>
+        <button class="toggle-btn active" id="source-separate">↕ Séparée (bas)</button>
+      </div>
     </div>
 
     <hr class="sep" />
@@ -442,7 +464,7 @@
       </div>
       <div class="slider-row">
         <label>Source</label>
-        <input type="range" id="fs-source" min="14" max="40" value="26" step="1" />
+        <input type="range" id="fs-source" min="14" max="72" value="26" step="1" />
         <span class="slider-val" id="fs-s-out">26</span>
       </div>
     </div>
@@ -492,6 +514,7 @@ let textColor   = '#F5E8C0';
 
 let footerImg   = null;
 let textBox     = false; // fond blanc derriere le texte
+let sourceMode  = 'separate'; // 'attached' ou 'separate'
 
 const FOOTERS = [
   { label: 'Footer 1', src: 'footer/footer1.jpg' },
@@ -748,6 +771,19 @@ document.querySelectorAll('.color-dot').forEach(dot =>
 document.getElementById('hadith').addEventListener('input', render);
 document.getElementById('source').addEventListener('input', render);
 
+document.getElementById('source-attached').addEventListener('click', function() {
+  sourceMode = 'attached';
+  this.classList.add('active');
+  document.getElementById('source-separate').classList.remove('active');
+  render();
+});
+document.getElementById('source-separate').addEventListener('click', function() {
+  sourceMode = 'separate';
+  this.classList.add('active');
+  document.getElementById('source-attached').classList.remove('active');
+  render();
+});
+
 document.getElementById('dl').addEventListener('click', () => {
   render();
   const a = document.createElement('a');
@@ -872,18 +908,51 @@ function render() {
   }
 
   // Dessin du texte
-  ctx.fillStyle = textBox ? '#1a1a1a' : textColor;
+  ctx.fillStyle = textColor;
   ctx.textAlign = 'center'; ctx.direction = 'rtl';
   ctx.font = `bold ${fsH}px 'Amiri', serif`;
   const lineCount = wrapText(hadithText, W/2, textCY, textMaxW, lineH);
 
-  /* 5. Source — positionnée dynamiquement sous le hadith */
+  /* 5. Source */
   if (sourceText) {
-    const sourceY = H * 0.42 + (lineCount * fsH * 1.75) / 2 + fsS * 2.4;
-    ctx.fillStyle = textColor + 'BB';
-    ctx.font = `${fsS}px 'Amiri', serif`;
-    ctx.direction = 'rtl';
-    ctx.fillText(sourceText, W/2, sourceY);
+    if (sourceMode === 'attached') {
+      // Attachée : même style que le hadith, juste après
+      const fullText = hadithText + ' ' + sourceText;
+      ctx.fillStyle = textColor;
+      ctx.textAlign = 'center'; ctx.direction = 'rtl';
+      ctx.font = `bold ${fsH}px 'Amiri', serif`;
+
+      // Recalculer le fond blanc avec texte complet
+      if (textBox) {
+        const words2 = fullText.split(' ');
+        let line2 = '', tmpLines2 = [];
+        for (const w of words2) {
+          const t = line2 ? line2 + ' ' + w : w;
+          if (ctx.measureText(t).width > textMaxW && line2) { tmpLines2.push(line2); line2 = w; }
+          else line2 = t;
+        }
+        if (line2) tmpLines2.push(line2);
+        const ml2 = tmpLines2.length;
+        const tbPadX = 36, tbPadY = 32;
+        const tbW2 = textMaxW + tbPadX * 2;
+        const tbH2 = ml2 * lineH + tbPadY * 2;
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,255,255,1)';
+        roundRect(ctx, W/2 - tbW2/2, textCY - ml2 * lineH / 2 - tbPadY, tbW2, tbH2, 14);
+        ctx.fill();
+        ctx.restore();
+        ctx.fillStyle = textColor;
+      }
+      ctx.font = `bold ${fsH}px 'Amiri', serif`;
+      wrapText(fullText, W/2, textCY, textMaxW, lineH);
+    } else {
+      // Séparée : en bas, taille différente
+      const sourceY = H * 0.42 + (lineCount * fsH * 1.75) / 2 + fsS * 2.4;
+      ctx.fillStyle = textColor;
+      ctx.font = `${fsS}px 'Amiri', serif`;
+      ctx.direction = 'rtl';
+      ctx.fillText(sourceText, W/2, sourceY);
+    }
   }
 
   /* 6. Logo */
