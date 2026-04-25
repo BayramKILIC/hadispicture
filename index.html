@@ -1313,6 +1313,54 @@ function render() {
 }
 
 
+
+const LANGS = {
+  ar: {
+    appTitle: '✦ منشئ صور الأحاديث ✦',
+    appSub: 'اكتب حديثًا وحمّل الصورة بتنسيق 4:5 (800 × 1000)',
+    babTitle: 'باب (فصل)', babColor: 'لون الباب', babOutlineLabel: 'حدود الباب',
+    babBgLabel: 'خلفية الباب', babLabel: 'باب',
+    hadithTitle: 'نص الحديث', sourceTitle: 'المصدر / المرجع',
+    attached: '↩ ملحقة بالنص', separate: '↕ منفصلة (أسفل)',
+    hadithColor: 'لون النص', hadithOutlineLabel: 'حدود النص',
+    outline: '◻ حدود', hadithBg: 'خلفية النص',
+    presetBg: 'خلفيات جاهزة', myBg: 'خلفياتي (صور)',
+    uploadBg: 'أو تحميل خلفية', logoPos: 'موضع الشعار',
+    logoSize: 'حجم الشعار', footerTitle: 'تذييل (أسفل الصورة)',
+    sourceColor: 'لون المصدر', sourceOutlineLabel: 'حدود المصدر',
+    sourceBgLabel: 'خلفية المصدر', textSize: 'حجم الخط',
+    hadithLabel: 'الحديث', sourceLabel: 'المصدر',
+    small: 'صغير', big: 'كبير',
+    noLogo: '✕ بدون شعار', noFooter: '✕ بدون تذييل',
+    posBottom: 'أسفل · وسط', posTopRight: 'أعلى · يمين', posTopLeft: 'أعلى · يسار',
+    download: '⬇ تحميل الصورة (800 × 1000)',
+    uploadPlaceholder: '＋ انقر لتحميل صورة',
+  },
+  tr: {
+    appTitle: '✦ Hadis Görseli Oluşturucu ✦',
+    appSub: 'Bir hadis yazın ve 4:5 formatında görsel indirin (800 × 1000)',
+    babTitle: 'Bab (Bölüm)', babColor: 'Bab Rengi', babOutlineLabel: 'Bab Konturu',
+    babBgLabel: 'Bab Arka Planı', babLabel: 'Bab',
+    hadithTitle: 'Hadis Metni', sourceTitle: 'Kaynak / Referans',
+    attached: '↩ Metne Ekli', separate: '↕ Ayrı (Alt)',
+    hadithColor: 'Metin Rengi', hadithOutlineLabel: 'Metin Konturu',
+    outline: '◻ Kontur', hadithBg: 'Metin Arka Planı',
+    presetBg: 'Hazır Arka Planlar', myBg: 'Kendi Arka Planlarım',
+    uploadBg: 'Veya Arka Plan Yükle', logoPos: 'Logo Konumu',
+    logoSize: 'Logo Boyutu', footerTitle: 'Alt Bilgi (Görsel Altı)',
+    sourceColor: 'Kaynak Rengi', sourceOutlineLabel: 'Kaynak Konturu',
+    sourceBgLabel: 'Kaynak Arka Planı', textSize: 'Yazı Boyutu',
+    hadithLabel: 'Hadis', sourceLabel: 'Kaynak',
+    small: 'Küçük', big: 'Büyük',
+    noLogo: '✕ Logosuz', noFooter: '✕ Alt Bilgi Yok',
+    posBottom: 'Alt · Orta', posTopRight: 'Üst · Sağ', posTopLeft: 'Üst · Sol',
+    download: '⬇ Görseli İndir (800 × 1000)',
+    uploadPlaceholder: '＋ Görsel yüklemek için tıklayın',
+  }
+};
+
+let currentLang = 'ar';
+
 function applyLang(lang) {
   currentLang = lang;
   const t = LANGS[lang];
