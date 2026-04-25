@@ -1170,18 +1170,21 @@ function render() {
   const hadithBlockH = measuredLines * lineH;
   const totalH       = babBlockH + hadithBlockH;
 
-  // Centrage vertical : Bab + Hadith + Source dans la zone 0-850px
+  // Centrage vertical précis dans la zone 0-850px (footer à 850px)
   const CONTENT_ZONE = 850;
 
-  // Hauteur de la source (si séparée)
-  const sourceBlockH = (sourceText && sourceMode === 'separate') ? fsS * 2.4 + fsS * 1.2 : 0;
+  // Padding des boîtes (doit correspondre aux valeurs dans le dessin)
+  const BAB_PAD_Y    = babBgColor  !== 'none' ? 22 : 0;
+  const HAD_PAD_Y    = boxColor    !== 'none' ? 24 : 0;
+  const SRC_H        = (sourceText && sourceMode === 'separate') ? fsS * 2.4 + fsS * 1.0 : 0;
 
-  // Hauteur totale de tout le contenu
-  const totalContentH = totalH + sourceBlockH;
+  // Hauteur visuelle totale (boîtes + textes + source)
+  const totalVisualH = BAB_PAD_Y + totalH + HAD_PAD_Y + SRC_H;
 
-  // Centre de tout le contenu dans la zone
-  const blockStartY = (CONTENT_ZONE - totalContentH) / 2;
-  const blockCY     = blockStartY + totalH / 2;
+  // Marge égale en haut et en bas
+  const visualStartY = (CONTENT_ZONE - totalVisualH) / 2;
+  const blockStartY  = visualStartY + BAB_PAD_Y;
+  const blockCY      = blockStartY + totalH / 2;
 
   const babCY  = blockStartY + babMeasuredLines * babLineH / 2;
   const textCY = blockStartY + babBlockH + hadithBlockH / 2;
