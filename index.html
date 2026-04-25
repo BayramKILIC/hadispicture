@@ -330,6 +330,38 @@
     .source-bg-btn.active { border-color:var(--gold); color:var(--gold); }
     .source-bg-btn:disabled { opacity:0.3; cursor:not-allowed; }
     .color-group-label { font-size:11px; color:var(--text-muted); margin-bottom:5px; }
+
+    .box-color-dot {
+      width: 26px; height: 26px; border-radius: 50%;
+      cursor: pointer; border: 2px solid transparent;
+      transition: outline 0.12s; flex-shrink: 0;
+    }
+    .box-color-dot.active {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+    .box-color-row { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 8px; }
+    .box-options { display: none; margin-top: 8px; }
+    .box-options.visible { display: block; }
+
+    .no-color-dot {
+      width: 26px; height: 26px; border-radius: 50%;
+      cursor: pointer; border: 2px solid rgba(255,255,255,0.3);
+      position: relative; background: transparent; flex-shrink: 0;
+      transition: outline 0.12s;
+    }
+    .no-color-dot::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 1.5px;
+      background: rgba(255,255,255,0.5);
+      transform: rotate(-45deg);
+    }
+    .no-color-dot.active {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body>
@@ -348,6 +380,31 @@
     <div>
       <div class="section-title">Texte du hadith</div>
       <textarea id="hadith" placeholder="اكتب الحديث هنا...">مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ</textarea>
+      <div class="color-group-label" style="margin-top:10px;">Couleur du texte</div>
+      <div class="dot-row" id="color-row">
+        <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
+        <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
+        <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
+        <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
+        <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
+        <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
+        <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+      </div>
+      <div class="color-group-label" style="margin-top:10px;">Fond derrière le texte</div>
+      <div class="box-color-row" id="box-color-row">
+          <div class="no-color-dot active" data-color="none" title="Pas de couleur"></div>
+          <div class="box-color-dot " data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
+          <div class="box-color-dot" data-color="#000000" style="background:#000000"></div>
+          <div class="box-color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+          <div class="box-color-dot" data-color="#1a1209" style="background:#1a1209"></div>
+          <div class="box-color-dot" data-color="#07202a" style="background:#07202a"></div>
+          <div class="box-color-dot" data-color="#091a12" style="background:#091a12"></div>
+          <div class="box-color-dot" data-color="#4B0082" style="background:#4B0082"></div>
+          <div class="box-color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+          <div class="box-color-dot" data-color="#C9A227" style="background:#C9A227"></div>
+          <div class="box-color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
+      </div>
     </div>
 
     <!-- Source -->
@@ -358,7 +415,31 @@
         <button class="toggle-btn" id="source-attached">↩ Attachée au texte</button>
         <button class="toggle-btn active" id="source-separate">↕ Séparée (bas)</button>
       </div>
-      <button class="source-bg-btn" id="source-bg-btn">◻ Fond blanc derrière la source</button>
+      <div class="color-group-label" style="margin-top:10px;">Couleur de la source</div>
+      <div class="dot-row" id="color-source-row">
+        <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
+        <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
+        <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
+        <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
+        <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
+        <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
+        <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+      </div>
+      <div class="color-group-label" style="margin-top:10px;">Fond derrière la source</div>
+      <div class="box-color-row" id="source-bg-row">
+          <div class="no-color-dot active" data-color="none" title="Pas de couleur"></div>
+          <div class="box-color-dot " data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
+          <div class="box-color-dot" data-color="#000000" style="background:#000000"></div>
+          <div class="box-color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+          <div class="box-color-dot" data-color="#1a1209" style="background:#1a1209"></div>
+          <div class="box-color-dot" data-color="#07202a" style="background:#07202a"></div>
+          <div class="box-color-dot" data-color="#091a12" style="background:#091a12"></div>
+          <div class="box-color-dot" data-color="#4B0082" style="background:#4B0082"></div>
+          <div class="box-color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+          <div class="box-color-dot" data-color="#C9A227" style="background:#C9A227"></div>
+          <div class="box-color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
+      </div>
     </div>
 
     <hr class="sep" />
@@ -437,41 +518,6 @@
       <button class="no-footer-btn active" id="no-footer-btn">✕ Pas de footer</button>
     </div>
 
-    <hr class="sep" />
-
-    <!-- Couleurs -->
-    <div>
-      <div class="section-title">Couleurs</div>
-      <div class="color-group-label">Texte hadith</div>
-      <div class="dot-row" id="color-row">
-        <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
-        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
-        <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
-        <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
-        <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
-        <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
-        <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
-        <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
-      </div>
-      <div class="color-group-label" style="margin-top:12px;">Texte source</div>
-      <div class="dot-row" id="color-source-row">
-        <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
-        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
-        <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
-        <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
-        <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
-        <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
-        <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
-        <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
-      </div>
-    </div>
-
-    <!-- Fond texte -->
-    <div>
-      <div class="section-title">Fond du texte</div>
-      <button class="no-footer-btn" id="textbox-btn">◻ Fond blanc derrière le texte</button>
-    </div>
-
     <!-- Taille texte -->
     <div>
       <div class="section-title">Taille du texte</div>
@@ -531,8 +577,8 @@ let customBgImg = null;
 let textColor   = '#F5E8C0';
 
 let footerImg   = null;
-let textBox     = false;
-let sourceBg    = false;
+let boxColor    = 'none'; // 'none' = pas de fond
+let sourceBgColor = 'none';
 let sourceColor = '#F5E8C0';
 let sourceMode  = 'separate'; // 'attached' ou 'separate'
 
@@ -758,12 +804,25 @@ document.getElementById('logo-size').addEventListener('input', function () {
   render();
 });
 
-document.getElementById('textbox-btn').addEventListener('click', function () {
-  textBox = !textBox;
-  this.textContent = textBox ? '◼ Fond blanc actif' : '◻ Fond blanc derrière le texte';
-  this.classList.toggle('active', textBox);
-  render();
-});
+// Palette fond hadith
+document.querySelectorAll('#box-color-row .box-color-dot, #box-color-row .no-color-dot').forEach(dot =>
+  dot.addEventListener('click', () => {
+    document.querySelectorAll('#box-color-row .box-color-dot, #box-color-row .no-color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    boxColor = dot.dataset.color;
+    render();
+  })
+);
+
+// Palette fond source
+document.querySelectorAll('#source-bg-row .box-color-dot, #source-bg-row .no-color-dot').forEach(dot =>
+  dot.addEventListener('click', () => {
+    document.querySelectorAll('#source-bg-row .box-color-dot, #source-bg-row .no-color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    sourceBgColor = dot.dataset.color;
+    render();
+  })
+);
 
 document.getElementById('no-logo-btn').addEventListener('click', function () {
   showLogo = !showLogo;
@@ -790,12 +849,7 @@ document.querySelectorAll('#color-source-row .color-dot').forEach(dot =>
   })
 );
 
-document.getElementById('source-bg-btn').addEventListener('click', function() {
-  sourceBg = !sourceBg;
-  this.textContent = sourceBg ? '◼ Fond blanc source actif' : '◻ Fond blanc derrière la source';
-  this.classList.toggle('active', sourceBg);
-  render();
-});
+
 
 ['fs-hadith', 'fs-source'].forEach(id =>
   document.getElementById(id).addEventListener('input', function () {
@@ -932,14 +986,14 @@ function render() {
   const measuredLines = tmpLines.length;
 
   // Fond blanc si option active
-  if (textBox) {
+  if (boxColor !== 'none') {
     const tbPadX = 36, tbPadY = 32;
     const tbW = textMaxW + tbPadX * 2;
     const tbH = measuredLines * lineH + tbPadY * 2;
     const tbX = W/2 - tbW/2;
     const tbY = textCY - measuredLines * lineH / 2 - tbPadY;
     ctx.save();
-    ctx.fillStyle = 'rgba(255,255,255,1)';
+    ctx.fillStyle = boxColor;
     roundRect(ctx, tbX, tbY, tbW, tbH, 14);
     ctx.fill();
     ctx.restore();
@@ -954,7 +1008,7 @@ function render() {
   if (!sourceText || sourceMode === 'separate') {
     lineCount = wrapText(hadithText, W/2, textCY, textMaxW, lineH);
   } else {
-    lineCount = measuredLines; // sera redessiné avec source dans le bloc 5
+    lineCount = measuredLines;
   }
 
   /* 5. Source */
@@ -967,7 +1021,7 @@ function render() {
       ctx.font = `bold ${fsH}px 'Amiri', serif`;
 
       // Recalculer le fond blanc avec texte complet
-      if (textBox) {
+      if (boxColor !== 'none') {
         const words2 = fullText.split(' ');
         let line2 = '', tmpLines2 = [];
         for (const w of words2) {
@@ -981,18 +1035,18 @@ function render() {
         const tbW2 = textMaxW + tbPadX * 2;
         const tbH2 = ml2 * lineH + tbPadY * 2;
         ctx.save();
-        ctx.fillStyle = 'rgba(255,255,255,1)';
+        ctx.fillStyle = boxColor;
         roundRect(ctx, W/2 - tbW2/2, textCY - ml2 * lineH / 2 - tbPadY, tbW2, tbH2, 14);
         ctx.fill();
         ctx.restore();
-        ctx.fillStyle = textColor;
       }
+      ctx.fillStyle = textColor;
       ctx.font = `bold ${fsH}px 'Amiri', serif`;
       wrapText(fullText, W/2, textCY, textMaxW, lineH);
     } else {
       // Séparée : en bas, taille différente
       const sourceY = H * 0.42 + (lineCount * fsH * 1.75) / 2 + fsS * 2.4;
-      if (sourceBg) {
+      if (sourceBgColor !== 'none') {
         const sPadX = 30, sPadY = 16;
         ctx.save();
         ctx.font = `${fsS}px 'Amiri', serif`;
@@ -1003,7 +1057,7 @@ function render() {
         const descent = metrics.actualBoundingBoxDescent || fsS * 0.25;
         const boxH = ascent + descent + sPadY * 2;
         const boxY = sourceY - ascent - sPadY;
-        ctx.fillStyle = 'rgba(255,255,255,1)';
+        ctx.fillStyle = sourceBgColor;
         roundRect(ctx, W/2 - measW/2, boxY, measW, boxH, 10);
         ctx.fill();
         ctx.restore();
