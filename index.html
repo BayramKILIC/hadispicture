@@ -1170,10 +1170,18 @@ function render() {
   const hadithBlockH = measuredLines * lineH;
   const totalH       = babBlockH + hadithBlockH;
 
-  // Contenu centré dans les 650px du haut — 350px réservés en bas (source + logo + footer)
+  // Centrage vertical : Bab + Hadith + Source dans la zone 0-850px
   const CONTENT_ZONE = 850;
-  const blockCY     = CONTENT_ZONE / 2;
-  const blockStartY = blockCY - totalH / 2;
+
+  // Hauteur de la source (si séparée)
+  const sourceBlockH = (sourceText && sourceMode === 'separate') ? fsS * 2.4 + fsS * 1.2 : 0;
+
+  // Hauteur totale de tout le contenu
+  const totalContentH = totalH + sourceBlockH;
+
+  // Centre de tout le contenu dans la zone
+  const blockStartY = (CONTENT_ZONE - totalContentH) / 2;
+  const blockCY     = blockStartY + totalH / 2;
 
   const babCY  = blockStartY + babMeasuredLines * babLineH / 2;
   const textCY = blockStartY + babBlockH + hadithBlockH / 2;
