@@ -362,6 +362,17 @@
       outline: 2px solid var(--gold);
       outline-offset: 2px;
     }
+
+    .outline-row { display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    .outline-toggle {
+      padding:5px 12px; font-size:11px; font-family:'Inter',sans-serif;
+      cursor:pointer; border-radius:var(--radius-sm);
+      border:1px solid var(--border); background:var(--surface2);
+      color:var(--text-muted); transition:border .15s,color .15s; white-space:nowrap;
+    }
+    .outline-toggle.active { border-color:var(--gold); color:var(--gold); }
+    .outline-row input[type=range] { flex:1; min-width:60px; }
+    .outline-row .slider-val { font-size:11px; color:var(--text-muted); min-width:24px; }
   </style>
 </head>
 <body>
@@ -382,14 +393,20 @@
       <textarea id="hadith" placeholder="اكتب الحديث هنا...">مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ</textarea>
       <div class="color-group-label" style="margin-top:10px;">Couleur du texte</div>
       <div class="dot-row" id="color-row">
-        <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
-        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
+        <div class="color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+        <div class="color-dot active" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
         <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
         <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
         <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
         <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
         <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
         <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+      </div>
+      <div class="color-group-label" style="margin-top:10px;">Contour du texte</div>
+      <div class="outline-row">
+        <button class="outline-toggle active" id="outline-hadith-btn">◼ Contour actif</button>
+        <input type="range" id="outline-hadith-size" min="1" max="12" value="2" step="1" />
+        <span class="slider-val" id="outline-hadith-out">2px</span>
       </div>
       <div class="color-group-label" style="margin-top:10px;">Fond derrière le texte</div>
       <div class="box-color-row" id="box-color-row">
@@ -401,7 +418,7 @@
           <div class="box-color-dot" data-color="#07202a" style="background:#07202a"></div>
           <div class="box-color-dot" data-color="#091a12" style="background:#091a12"></div>
           <div class="box-color-dot" data-color="#4B0082" style="background:#4B0082"></div>
-          <div class="box-color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+          <div class="box-color-dot active" data-color="#6B3A2A" style="background:#6B3A2A"></div>
           <div class="box-color-dot" data-color="#C9A227" style="background:#C9A227"></div>
           <div class="box-color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
       </div>
@@ -417,14 +434,20 @@
       </div>
       <div class="color-group-label" style="margin-top:10px;">Couleur de la source</div>
       <div class="dot-row" id="color-source-row">
-        <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
-        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
+        <div class="color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+        <div class="color-dot active" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
         <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
         <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
         <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
         <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
         <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
         <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+      </div>
+      <div class="color-group-label" style="margin-top:10px;">Contour de la source</div>
+      <div class="outline-row">
+        <button class="outline-toggle active" id="outline-source-btn">◼ Contour actif</button>
+        <input type="range" id="outline-source-size" min="1" max="12" value="2" step="1" />
+        <span class="slider-val" id="outline-source-out">2px</span>
       </div>
       <div class="color-group-label" style="margin-top:10px;">Fond derrière la source</div>
       <div class="box-color-row" id="source-bg-row">
@@ -523,13 +546,13 @@
       <div class="section-title">Taille du texte</div>
       <div class="slider-row" style="margin-bottom:10px;">
         <label>Hadith</label>
-        <input type="range" id="fs-hadith" min="24" max="80" value="48" step="2" />
-        <span class="slider-val" id="fs-h-out">48</span>
+        <input type="range" id="fs-hadith" min="24" max="80" value="64" step="2" />
+        <span class="slider-val" id="fs-h-out">64</span>
       </div>
       <div class="slider-row">
         <label>Source</label>
-        <input type="range" id="fs-source" min="14" max="72" value="26" step="1" />
-        <span class="slider-val" id="fs-s-out">26</span>
+        <input type="range" id="fs-source" min="14" max="72" value="56" step="1" />
+        <span class="slider-val" id="fs-s-out">56</span>
       </div>
     </div>
 
@@ -572,15 +595,19 @@ const ctx = cv.getContext('2d');
 let logoImg     = null;
 let showLogo    = true;
 let logoPos     = 'bottom-center';
-let currentBg   = { type: 'gradient', index: 0 };
+let currentBg   = { type: 'gradient', index: 6 };
 let customBgImg = null;
-let textColor   = '#F5E8C0';
+let textColor   = '#FFFFFF';
 
 let footerImg   = null;
-let boxColor    = 'none'; // 'none' = pas de fond
+let boxColor    = '#6B3A2A';
 let sourceBgColor = 'none';
-let sourceColor = '#F5E8C0';
-let sourceMode  = 'separate'; // 'attached' ou 'separate'
+let sourceColor = '#FFFFFF';
+let sourceMode    = 'separate';
+let outlineHadith = true;
+let outlineHadithW = 2;
+let outlineSource = true;
+let outlineSourceW = 2;
 
 const FOOTERS = [
   { label: 'Footer 1', src: 'footer/footer1.jpg' },
@@ -861,6 +888,34 @@ document.querySelectorAll('#color-source-row .color-dot').forEach(dot =>
 document.getElementById('hadith').addEventListener('input', render);
 document.getElementById('source').addEventListener('input', render);
 
+// Contour hadith
+document.getElementById('outline-hadith-btn').addEventListener('click', function() {
+  outlineHadith = !outlineHadith;
+  this.textContent = outlineHadith ? '◼ Contour actif' : '◻ Contour';
+  this.classList.toggle('active', outlineHadith);
+  document.getElementById('outline-hadith-size').disabled = !outlineHadith;
+  render();
+});
+document.getElementById('outline-hadith-size').addEventListener('input', function() {
+  outlineHadithW = parseInt(this.value);
+  document.getElementById('outline-hadith-out').textContent = this.value + 'px';
+  render();
+});
+
+// Contour source
+document.getElementById('outline-source-btn').addEventListener('click', function() {
+  outlineSource = !outlineSource;
+  this.textContent = outlineSource ? '◼ Contour actif' : '◻ Contour';
+  this.classList.toggle('active', outlineSource);
+  document.getElementById('outline-source-size').disabled = !outlineSource;
+  render();
+});
+document.getElementById('outline-source-size').addEventListener('input', function() {
+  outlineSourceW = parseInt(this.value);
+  document.getElementById('outline-source-out').textContent = this.value + 'px';
+  render();
+});
+
 document.getElementById('source-attached').addEventListener('click', function() {
   sourceMode = 'attached';
   this.classList.add('active');
@@ -914,6 +969,20 @@ function roundRect(c, x, y, w, h, r) {
   c.lineTo(x+r, y+h);                    c.arcTo(x,   y+h, x,   y+h-r, r);
   c.lineTo(x, y+r);                      c.arcTo(x,   y,   x+r, y,     r);
   c.closePath();
+}
+
+function wrapTextStroke(text, cx, cy, maxW, lineH) {
+  const words = text.split(' ');
+  let line = '', lines = [];
+  for (const w of words) {
+    const t = line ? line + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; }
+    else line = t;
+  }
+  if (line) lines.push(line);
+  let sy = cy - (lines.length * lineH) / 2 + lineH * 0.6;
+  for (const l of lines) { ctx.strokeText(l, cx, sy); sy += lineH; }
+  return lines.length;
 }
 
 function wrapText(text, cx, cy, maxW, lineH) {
@@ -1001,11 +1070,16 @@ function render() {
 
   // Dessin du texte — seulement si source séparée ou pas de source
   // (si attachée, on dessine hadith+source ensemble dans le bloc source)
-  ctx.fillStyle = textColor;
   ctx.textAlign = 'center'; ctx.direction = 'rtl';
   ctx.font = `bold ${fsH}px 'Amiri', serif`;
   let lineCount;
   if (!sourceText || sourceMode === 'separate') {
+    if (outlineHadith) {
+      ctx.strokeStyle = '#000000'; ctx.lineWidth = outlineHadithW * 2;
+      ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+      wrapTextStroke(hadithText, W/2, textCY, textMaxW, lineH);
+    }
+    ctx.fillStyle = textColor;
     lineCount = wrapText(hadithText, W/2, textCY, textMaxW, lineH);
   } else {
     lineCount = measuredLines;
@@ -1062,9 +1136,14 @@ function render() {
         ctx.fill();
         ctx.restore();
       }
-      ctx.fillStyle = sourceColor;
       ctx.font = `${fsS}px 'Amiri', serif`;
       ctx.direction = 'rtl';
+      if (outlineSource) {
+        ctx.strokeStyle = '#000000'; ctx.lineWidth = outlineSourceW * 2;
+        ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+        ctx.strokeText(sourceText, W/2, sourceY);
+      }
+      ctx.fillStyle = sourceColor;
       ctx.fillText(sourceText, W/2, sourceY);
     }
   }
