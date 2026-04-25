@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Générateur d'images Hadith</title>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9A227;
+      --gold-light: #e8c456;
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface2: #22222e;
+      --border: rgba(255,255,255,0.08);
+      --text: #e8e6e0;
+      --text-muted: #888;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    header h1 {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    header p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ── Layout ── */
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* ── Panels ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    /* ── Inputs ── */
+    textarea, input[type="text"] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 12px 14px;
+      font-family: 'Amiri', serif;
+      font-size: 22px;
+      line-height: 1.8;
+      direction: rtl;
+      resize: vertical;
+      transition: border 0.2s;
+      outline: none;
+    }
+    textarea { min-height: 110px; }
+    input[type="text"] { font-size: 17px; }
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--gold);
+    }
+
+    /* ── Fond grid ── */
+    .bg-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+      gap: 8px;
+    }
+    .bg-thumb {
+      aspect-ratio: 2/3;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      position: relative;
+      transition: border 0.15s, transform 0.15s;
+    }
+    .bg-thumb:hover { transform: scale(1.05); }
+    .bg-thumb.active { border-color: var(--gold); }
+    .bg-thumb canvas,
+    .bg-thumb img {
+      width: 100%; height: 100%;
+      display: block; object-fit: cover;
+    }
+    .bg-thumb .thumb-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.7);
+      color: #fff; font-size: 9px;
+      text-align: center; padding: 3px 2px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 1.5px dashed rgba(201,162,39,0.35);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 13px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .upload-zone:hover {
+      background: rgba(201,162,39,0.05);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── Position logo ── */
+    .pos-row { display: flex; gap: 8px; }
+    .pos-btn {
+      flex: 1; padding: 10px 6px;
+      font-size: 11px; font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text-muted);
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+      transition: border 0.15s, color 0.15s;
+    }
+    .pos-btn.active { border-color: var(--gold); color: var(--gold); }
+    .pos-icon {
+      width: 32px; height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      position: relative;
+      background: var(--bg);
+    }
+    .pos-dot {
+      width: 10px; height: 7px;
+      background: var(--gold);
+      border-radius: 2px;
+      position: absolute;
+    }
+
+    /* ── Sliders ── */
+    .slider-row {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .slider-row label {
+      font-size: 12px; color: var(--text-muted); white-space: nowrap;
+    }
+    input[type="range"] {
+      flex: 1; min-width: 60px;
+      accent-color: var(--gold);
+    }
+    .slider-val {
+      font-size: 12px; color: var(--text-muted);
+      min-width: 34px; text-align: right;
+    }
+
+    /* ── Couleur texte ── */
+    .dot-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .color-dot {
+      width: 30px; height: 30px; border-radius: 50%;
+      cursor: pointer; border: 2px solid transparent;
+      transition: outline 0.15s;
+    }
+    .color-dot.active {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    /* ── Aperçu ── */
+    .preview-col {
+      display: flex; flex-direction: column; gap: 16px;
+      position: sticky; top: 24px;
+    }
+    .preview-frame {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+    }
+    .preview-frame canvas {
+      width: 100%; display: block;
+    }
+
+    /* ── Bouton télécharger ── */
+    .dl-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--gold);
+      color: #0f0f13;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .dl-btn:hover { background: var(--gold-light); }
+    .dl-btn:active { transform: scale(0.98); }
+
+    /* ── Séparateur ── */
+    .sep {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Info box ── */
+    .info {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      line-height: 1.6;
+    }
+    .info code {
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 11px;
+      color: var(--gold);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>✦ Générateur d'images Hadith ✦</h1>
+  <p>Écris un hadith en arabe et télécharge l'image en format portrait (800 × 1200)</p>
+</header>
+
+<div class="container">
+
+  <!-- ── Colonne gauche : contrôles ── -->
+  <div class="panel">
+
+    <!-- Hadith -->
+    <div>
+      <div class="section-title">Texte du hadith</div>
+      <textarea id="hadith" placeholder="اكتب الحديث هنا...">مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ</textarea>
+    </div>
+
+    <!-- Source -->
+    <div>
+      <div class="section-title">Source / Référence</div>
+      <input type="text" id="source" value="رواه البخاري ومسلم" placeholder="رواه البخاري" />
+    </div>
+
+    <hr class="sep" />
+
+    <!-- Fonds prédéfinis -->
+    <div>
+      <div class="section-title">Fonds prédéfinis</div>
+      <div class="bg-grid" id="bg-gradient-grid"></div>
+    </div>
+
+    <!-- Mes fonds JPG -->
+    <div>
+      <div class="section-title">Mes fonds (images)</div>
+      <div class="bg-grid" id="bg-photo-grid"></div>
+      <div class="info" style="margin-top:10px;">
+        Ajoute tes fonds dans <code>backgrounds/</code> et déclare-les dans
+        <code>MES_FONDS</code> en bas du fichier HTML.
+      </div>
+    </div>
+
+    <!-- Upload custom -->
+    <div>
+      <div class="section-title">Ou charger un fond</div>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="file-input" accept="image/*" style="display:none" />
+        ＋ Cliquer pour uploader une image (JPG, PNG…)
+      </div>
+    </div>
+
+    <hr class="sep" />
+
+    <!-- Position logo -->
+    <div>
+      <div class="section-title">Position du logo</div>
+      <div class="pos-row">
+        <button class="pos-btn active" data-pos="bottom-center">
+          <div class="pos-icon">
+            <div class="pos-dot" style="bottom:3px;left:50%;transform:translateX(-50%)"></div>
+          </div>
+          Bas · centré
+        </button>
+        <button class="pos-btn" data-pos="top-right">
+          <div class="pos-icon">
+            <div class="pos-dot" style="top:3px;right:3px"></div>
+          </div>
+          Haut · droite
+        </button>
+        <button class="pos-btn" data-pos="top-left">
+          <div class="pos-icon">
+            <div class="pos-dot" style="top:3px;left:3px"></div>
+          </div>
+          Haut · gauche
+        </button>
+      </div>
+    </div>
+
+    <!-- Taille logo -->
+    <div>
+      <div class="section-title">Taille du logo</div>
+      <div class="slider-row">
+        <label>Petit</label>
+        <input type="range" id="logo-size" min="50" max="200" value="100" step="10" />
+        <label>Grand</label>
+        <span class="slider-val" id="logo-size-out">100px</span>
+      </div>
+    </div>
+
+    <hr class="sep" />
+
+    <!-- Couleur texte -->
+    <div>
+      <div class="section-title">Couleur du texte</div>
+      <div class="dot-row" id="color-row">
+        <div class="color-dot active" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3)"></div>
+        <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
+        <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
+        <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
+        <div class="color-dot" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
+      </div>
+    </div>
+
+    <!-- Taille texte -->
+    <div>
+      <div class="section-title">Taille du texte</div>
+      <div class="slider-row" style="margin-bottom:10px;">
+        <label>Hadith</label>
+        <input type="range" id="fs-hadith" min="24" max="80" value="48" step="2" />
+        <span class="slider-val" id="fs-h-out">48</span>
+      </div>
+      <div class="slider-row">
+        <label>Source</label>
+        <input type="range" id="fs-source" min="14" max="40" value="26" step="1" />
+        <span class="slider-val" id="fs-s-out">26</span>
+      </div>
+    </div>
+
+  </div><!-- /panel gauche -->
+
+  <!-- ── Colonne droite : aperçu ── -->
+  <div class="preview-col">
+    <div class="preview-frame">
+      <canvas id="cv" width="800" height="1200"></canvas>
+    </div>
+    <button class="dl-btn" id="dl">⬇ Télécharger l'image (800 × 1200)</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* ══════════════════════════════════════════════
+   🖼️  MES FONDS PHOTOS
+   Pour ajouter un fond :
+   1. Mets le fichier JPG dans le dossier backgrounds/
+   2. Ajoute une ligne ici : { label: 'Nom', src: 'backgrounds/bg-XX.jpg' }
+   ══════════════════════════════════════════════ */
+const MES_FONDS = [
+  { label: 'Fond 1', src: 'backgrounds/bg-01.jpg' },
+  { label: 'Fond 2', src: 'backgrounds/bg-02.jpg' },
+  { label: 'Fond 3', src: 'backgrounds/bg-03.jpg' },
+  { label: 'Fond 4', src: 'backgrounds/bg-04.jpg' },
+  { label: 'Fond 5', src: 'backgrounds/bg-05.jpg' },
+  { label: 'Fond 6', src: 'backgrounds/bg-06.jpg' },
+];
+
+
+/* ══════════════════════════════════════════════
+   ⚙️  CONFIG — ne pas modifier sauf si besoin
+   ══════════════════════════════════════════════ */
+const W = 800, H = 1200;
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+
+let logoImg     = null;
+let logoPos     = 'bottom-center';
+let currentBg   = { type: 'gradient', index: 0 };
+let customBgImg = null;
+let textColor   = '#F5E8C0';
+
+/* ── Chargement logo.jpg au démarrage ── */
+(function loadLogo() {
+  const img = new Image();
+  img.onload = () => { logoImg = img; render(); };
+  img.onerror = () => console.warn('logo.jpg introuvable — place logo.jpg à la racine du projet.');
+  img.src = 'logo.jpg';
+})();
+
+/* ══════════════════════════════════════════════
+   FONDS DÉGRADÉS PRÉDÉFINIS
+   ══════════════════════════════════════════════ */
+function drawGeo(c, w, h, color) {
+  c.save(); c.strokeStyle = color; c.lineWidth = 0.8;
+  const s = 70;
+  for (let x = 0; x < w; x += s) {
+    for (let y = 0; y < h; y += s) {
+      const cx = x + s/2, cy = y + s/2, r = s * 0.38;
+      c.beginPath();
+      for (let i = 0; i < 8; i++) {
+        const a = Math.PI * 2 / 8 * i;
+        i ? c.lineTo(cx + r*Math.cos(a), cy + r*Math.sin(a))
+          : c.moveTo(cx + r*Math.cos(a), cy + r*Math.sin(a));
+      }
+      c.closePath(); c.stroke();
+      c.beginPath(); c.arc(cx, cy, s * 0.12, 0, Math.PI*2); c.stroke();
+    }
+  }
+  c.restore();
+}
+
+function drawStars(c, w, h) {
+  c.save(); c.fillStyle = 'rgba(255,215,100,0.3)';
+  for (let i = 0; i < 180; i++) {
+    c.beginPath();
+    c.arc(Math.random()*w, Math.random()*h, Math.random()*2+0.4, 0, Math.PI*2);
+    c.fill();
+  }
+  c.restore();
+}
+
+function drawMarble(c, w, h) {
+  c.save();
+  for (let i = 0; i < 10; i++) {
+    c.strokeStyle = `rgba(180,160,120,${Math.random()*.12+.04})`;
+    c.lineWidth = Math.random() * 10 + 2;
+    c.beginPath();
+    c.moveTo(0, Math.random()*h);
+    c.bezierCurveTo(Math.random()*w, Math.random()*h, Math.random()*w, Math.random()*h, w, Math.random()*h);
+    c.stroke();
+  }
+  c.restore();
+}
+
+function addVignette(c, w, h) {
+  const v = c.createRadialGradient(w/2, h/2, h*.15, w/2, h/2, h*.9);
+  v.addColorStop(0, 'rgba(0,0,0,0)');
+  v.addColorStop(1, 'rgba(0,0,0,0.65)');
+  c.fillStyle = v; c.fillRect(0, 0, w, h);
+}
+
+const GRADIENTS = [
+  { label: 'Or classique',  draw: (c,w,h) => { grad(c,w,h,'#1a1209','#2d1f05'); drawGeo(c,w,h,'rgba(201,162,39,0.18)');  addVignette(c,w,h); } },
+  { label: 'Bleu nuit',     draw: (c,w,h) => { grad(c,w,h,'#07202a','#0a3040'); drawGeo(c,w,h,'rgba(93,202,165,0.15)');  addVignette(c,w,h); } },
+  { label: 'Émeraude',      draw: (c,w,h) => { grad(c,w,h,'#091a12','#0f2e1a'); drawGeo(c,w,h,'rgba(125,201,94,0.14)');  addVignette(c,w,h); } },
+  { label: 'Bordeaux',      draw: (c,w,h) => { grad(c,w,h,'#1a0909','#2e0f0f'); drawGeo(c,w,h,'rgba(224,112,112,0.14)'); addVignette(c,w,h); } },
+  { label: 'Indigo',        draw: (c,w,h) => { grad(c,w,h,'#0d0a2e','#1a145a'); drawGeo(c,w,h,'rgba(150,130,240,0.15)'); addVignette(c,w,h); } },
+  { label: 'Ciel étoilé',   draw: (c,w,h) => { grad(c,w,h,'#050918','#0d1530'); drawStars(c,w,h);                        addVignette(c,w,h); } },
+  { label: 'Marbre',        draw: (c,w,h) => { c.fillStyle='#f0ebe0'; c.fillRect(0,0,w,h); drawMarble(c,w,h); } },
+  { label: 'Ardoise',       draw: (c,w,h) => { grad(c,w,h,'#1c2030','#252d42'); drawGeo(c,w,h,'rgba(180,190,220,0.12)'); addVignette(c,w,h); } },
+];
+
+function grad(c, w, h, c1, c2) {
+  const g = c.createLinearGradient(0, 0, w, h);
+  g.addColorStop(0, c1); g.addColorStop(1, c2);
+  c.fillStyle = g; c.fillRect(0, 0, w, h);
+}
+
+/* ══════════════════════════════════════════════
+   CONSTRUCTION DES GRILLES
+   ══════════════════════════════════════════════ */
+function makeThumb(drawFn) {
+  const tc = document.createElement('canvas');
+  tc.width = 100; tc.height = 150;
+  drawFn(tc.getContext('2d'), 100, 150);
+  return tc;
+}
+
+function addThumbToGrid(grid, thumbEl, label, onClick) {
+  const div = document.createElement('div');
+  div.className = 'bg-thumb';
+  const lbl = document.createElement('div');
+  lbl.className = 'thumb-label';
+  lbl.textContent = label;
+  div.appendChild(thumbEl);
+  div.appendChild(lbl);
+  div.addEventListener('click', () => {
+    document.querySelectorAll('.bg-thumb').forEach(b => b.classList.remove('active'));
+    div.classList.add('active');
+    onClick();
+  });
+  grid.appendChild(div);
+  return div;
+}
+
+function buildGradientGrid() {
+  const grid = document.getElementById('bg-gradient-grid');
+  GRADIENTS.forEach((p, i) => {
+    const div = addThumbToGrid(grid, makeThumb(p.draw), p.label, () => {
+      currentBg = { type: 'gradient', index: i };
+      customBgImg = null;
+      render();
+    });
+    if (i === 0) div.classList.add('active');
+  });
+}
+
+function buildPhotoGrid() {
+  const grid = document.getElementById('bg-photo-grid');
+  MES_FONDS.forEach((fond) => {
+    const img = new Image();
+    img.onload = () => {
+      // Miniature via canvas
+      const tc = document.createElement('canvas');
+      tc.width = 100; tc.height = 150;
+      const tc2 = tc.getContext('2d');
+      const ir = img.width/img.height, cr = 100/150;
+      let sx=0, sy=0, sw=img.width, sh=img.height;
+      if (ir > cr) { sw = sh*cr; sx = (img.width-sw)/2; }
+      else          { sh = sw/cr; sy = (img.height-sh)/2; }
+      tc2.drawImage(img, sx, sy, sw, sh, 0, 0, 100, 150);
+
+      addThumbToGrid(grid, tc, fond.label, () => {
+        currentBg = { type: 'photo', img };
+        customBgImg = null;
+        render();
+      });
+    };
+    img.onerror = () => {}; // fichier absent → on n'affiche pas la miniature
+    img.src = fond.src;
+  });
+}
+
+/* ══════════════════════════════════════════════
+   ÉVÉNEMENTS
+   ══════════════════════════════════════════════ */
+document.getElementById('upload-zone').addEventListener('click', () =>
+  document.getElementById('file-input').click()
+);
+document.getElementById('file-input').addEventListener('change', function () {
+  const file = this.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      customBgImg = img;
+      document.querySelectorAll('.bg-thumb').forEach(b => b.classList.remove('active'));
+      document.getElementById('upload-zone').textContent = '✓ ' + file.name;
+      render();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+document.querySelectorAll('.pos-btn').forEach(btn =>
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    logoPos = btn.dataset.pos;
+    render();
+  })
+);
+
+document.getElementById('logo-size').addEventListener('input', function () {
+  document.getElementById('logo-size-out').textContent = this.value + 'px';
+  render();
+});
+
+document.querySelectorAll('.color-dot').forEach(dot =>
+  dot.addEventListener('click', () => {
+    document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    textColor = dot.dataset.color;
+    render();
+  })
+);
+
+['fs-hadith', 'fs-source'].forEach(id =>
+  document.getElementById(id).addEventListener('input', function () {
+    document.getElementById(id === 'fs-hadith' ? 'fs-h-out' : 'fs-s-out').textContent = this.value;
+    render();
+  })
+);
+
+document.getElementById('hadith').addEventListener('input', render);
+document.getElementById('source').addEventListener('input', render);
+
+document.getElementById('dl').addEventListener('click', () => {
+  render();
+  const a = document.createElement('a');
+  a.download = 'hadith.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+});
+
+/* ══════════════════════════════════════════════
+   RENDU CANVAS
+   ══════════════════════════════════════════════ */
+function drawBackground() {
+  if (customBgImg) {
+    coverImage(customBgImg);
+    addVignette(ctx, W, H);
+  } else if (currentBg.type === 'photo') {
+    coverImage(currentBg.img);
+    addVignette(ctx, W, H);
+  } else {
+    GRADIENTS[currentBg.index].draw(ctx, W, H);
+  }
+}
+
+function coverImage(img) {
+  const ir = img.width / img.height, cr = W / H;
+  let sx=0, sy=0, sw=img.width, sh=img.height;
+  if (ir > cr) { sw = sh * cr; sx = (img.width - sw) / 2; }
+  else          { sh = sw / cr; sy = (img.height - sh) / 2; }
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+}
+
+function roundRect(c, x, y, w, h, r) {
+  c.beginPath();
+  c.moveTo(x+r, y); c.lineTo(x+w-r, y); c.arcTo(x+w, y,   x+w, y+r,   r);
+  c.lineTo(x+w, y+h-r);                  c.arcTo(x+w, y+h, x+w-r, y+h, r);
+  c.lineTo(x+r, y+h);                    c.arcTo(x,   y+h, x,   y+h-r, r);
+  c.lineTo(x, y+r);                      c.arcTo(x,   y,   x+r, y,     r);
+  c.closePath();
+}
+
+function wrapText(text, cx, cy, maxW, lineH) {
+  const words = text.split(' ');
+  let line = '', lines = [];
+  for (const w of words) {
+    const t = line ? line + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; }
+    else line = t;
+  }
+  if (line) lines.push(line);
+  let sy = cy - (lines.length * lineH) / 2 + lineH * 0.6;
+  for (const l of lines) { ctx.fillText(l, cx, sy); sy += lineH; }
+  return lines.length;
+}
+
+function drawLogo(logoSize) {
+  if (!logoImg) return;
+  const margin = 44, pad = 14;
+  let lx, ly;
+  if (logoPos === 'bottom-center') { lx = W/2 - logoSize/2; ly = H - margin - pad - logoSize; }
+  else if (logoPos === 'top-right') { lx = W - margin - pad - logoSize; ly = margin + pad; }
+  else { lx = margin + pad; ly = margin + pad; }
+
+  ctx.save();
+  // Ombre douce derrière le logo
+  ctx.beginPath(); ctx.arc(lx + logoSize/2, ly + logoSize/2, logoSize/2 + 6, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill();
+  // Logo découpé en cercle
+  ctx.beginPath(); ctx.arc(lx + logoSize/2, ly + logoSize/2, logoSize/2, 0, Math.PI*2);
+  ctx.clip();
+  ctx.drawImage(logoImg, lx, ly, logoSize, logoSize);
+  ctx.restore();
+}
+
+function render() {
+  const hadithText = document.getElementById('hadith').value.trim() || '...';
+  const sourceText = document.getElementById('source').value.trim();
+  const fsH        = parseInt(document.getElementById('fs-hadith').value);
+  const fsS        = parseInt(document.getElementById('fs-source').value);
+  const logoSize   = parseInt(document.getElementById('logo-size').value);
+
+  /* 1. Fond */
+  drawBackground();
+
+  /* 2. Double cadre décoratif */
+  const bi = 32;
+  ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 1.2;
+  roundRect(ctx, bi, bi, W-bi*2, H-bi*2, 14); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 0.7;
+  roundRect(ctx, bi+10, bi+10, W-bi*2-20, H-bi*2-20, 9); ctx.stroke();
+
+  /* 3. Ornements haut / bas */
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = '16px serif';
+  ctx.textAlign = 'center'; ctx.direction = 'ltr';
+  ctx.fillText('❖ ─── ✦ ─── ❖', W/2, 88);
+  ctx.fillText('❖ ─── ✦ ─── ❖', W/2, H - 68);
+
+  /* 4. Texte hadith */
+  ctx.fillStyle = textColor;
+  ctx.textAlign = 'center'; ctx.direction = 'rtl';
+  ctx.font = `bold ${fsH}px 'Amiri', serif`;
+  const lineCount = wrapText(hadithText, W/2, H * 0.42, W - 140, fsH * 1.75);
+
+  /* 5. Source — positionnée dynamiquement sous le hadith */
+  if (sourceText) {
+    const sourceY = H * 0.42 + (lineCount * fsH * 1.75) / 2 + fsS * 2.4;
+    // Ligne décorative
+    ctx.strokeStyle = textColor + '44'; ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(W/2 - 130, sourceY - fsS * 0.9);
+    ctx.lineTo(W/2 + 130, sourceY - fsS * 0.9);
+    ctx.stroke();
+    // Texte source
+    ctx.fillStyle = textColor + 'BB';
+    ctx.font = `italic ${fsS}px 'Amiri', serif`;
+    ctx.direction = 'rtl';
+    ctx.fillText(sourceText, W/2, sourceY);
+  }
+
+  /* 6. Logo */
+  drawLogo(logoSize);
+}
+
+/* ── Init ── */
+buildGradientGrid();
+buildPhotoGrid();
+render();
+</script>
+
+</body>
+</html>
