@@ -373,25 +373,37 @@
     .outline-toggle.active { border-color:var(--gold); color:var(--gold); }
     .outline-row input[type=range] { flex:1; min-width:60px; }
     .outline-row .slider-val { font-size:11px; color:var(--text-muted); min-width:24px; }
+
+    .lang-bar { display:flex; gap:10px; justify-content:flex-end; margin-bottom:4px; }
+    .flag-btn {
+      font-size:26px; cursor:pointer; border:none; background:transparent;
+      opacity:0.4; transition:opacity .2s, transform .15s;
+      line-height:1; padding:2px 4px; border-radius:6px;
+    }
+    .flag-btn.active { opacity:1; transform:scale(1.15); }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>✦ Générateur d'images Hadith ✦</h1>
-  <p>Écris un hadith en arabe et télécharge l'image en format portrait 4:5 (800 × 1000)</p>
+  <h1 data-i18n="appTitle">✦ Générateur d'images Hadith ✦</h1>
+  <p data-i18n="appSub">Écris un hadith en arabe et télécharge l'image en format portrait 4:5 (800 × 1000)</p>
 </header>
 
 <div class="container">
 
   <!-- ── Colonne gauche : contrôles ── -->
   <div class="panel">
+    <div class="lang-bar">
+      <button class="flag-btn" id="flag-tr" title="Türkçe">🇹🇷</button>
+      <button class="flag-btn active" id="flag-ar" title="العربية">🇸🇦</button>
+    </div>
 
     <!-- Hadith -->
     <div>
-      <div class="section-title">Texte du hadith</div>
+      <div class="section-title" data-i18n="hadithTitle">Texte du hadith</div>
       <textarea id="hadith" placeholder="اكتب الحديث هنا...">مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ</textarea>
-      <div class="color-group-label" style="margin-top:10px;">Couleur du texte</div>
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="hadithColor">Couleur du texte</div>
       <div class="dot-row" id="color-row">
         <div class="color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
         <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
@@ -402,13 +414,13 @@
         <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
         <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
       </div>
-      <div class="color-group-label" style="margin-top:10px;">Contour du texte</div>
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="hadithOutlineLabel">Contour du texte</div>
       <div class="outline-row">
-        <button class="outline-toggle" id="outline-hadith-btn">◻ Contour</button>
+        <button class="outline-toggle" id="outline-hadith-btn" data-i18n="outline">◻ Contour</button>
         <input type="range" id="outline-hadith-size" min="1" max="12" value="2" step="1" disabled />
         <span class="slider-val" id="outline-hadith-out">2px</span>
       </div>
-      <div class="color-group-label" style="margin-top:10px;">Fond derrière le texte</div>
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="hadithBg">Fond derrière le texte</div>
       <div class="box-color-row" id="box-color-row">
           <div class="no-color-dot active" data-color="none" title="Pas de couleur"></div>
           <div class="box-color-dot " data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
@@ -426,13 +438,13 @@
 
     <!-- Source -->
     <div>
-      <div class="section-title">Source / Référence</div>
+      <div class="section-title" data-i18n="sourceTitle">Source / Référence</div>
       <input type="text" id="source" value="رواه البخاري ومسلم" placeholder="رواه البخاري" />
       <div class="toggle-row">
-        <button class="toggle-btn" id="source-attached">↩ Attachée au texte</button>
-        <button class="toggle-btn active" id="source-separate">↕ Séparée (bas)</button>
+        <button class="toggle-btn" id="source-attached" data-i18n="attached">↩ Attachée au texte</button>
+        <button class="toggle-btn active" id="source-separate" data-i18n="separate">↕ Séparée (bas)</button>
       </div>
-      <div class="color-group-label" style="margin-top:10px;">Couleur de la source</div>
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="sourceColor">Couleur de la source</div>
       <div class="dot-row" id="color-source-row">
         <div class="color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
         <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
@@ -443,13 +455,13 @@
         <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
         <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
       </div>
-      <div class="color-group-label" style="margin-top:10px;">Contour de la source</div>
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="sourceOutlineLabel">Contour de la source</div>
       <div class="outline-row">
         <button class="outline-toggle" id="outline-source-btn">◻ Contour</button>
         <input type="range" id="outline-source-size" min="1" max="12" value="2" step="1" disabled />
         <span class="slider-val" id="outline-source-out">2px</span>
       </div>
-      <div class="color-group-label" style="margin-top:10px;">Fond derrière la source</div>
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="sourceBgLabel">Fond derrière la source</div>
       <div class="box-color-row" id="source-bg-row">
           <div class="no-color-dot active" data-color="none" title="Pas de couleur"></div>
           <div class="box-color-dot " data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
@@ -469,13 +481,13 @@
 
     <!-- Fonds prédéfinis -->
     <div>
-      <div class="section-title">Fonds prédéfinis</div>
+      <div class="section-title" data-i18n="presetBg">Fonds prédéfinis</div>
       <div class="bg-grid" id="bg-gradient-grid"></div>
     </div>
 
     <!-- Mes fonds JPG -->
     <div>
-      <div class="section-title">Mes fonds (images)</div>
+      <div class="section-title" data-i18n="myBg">Mes fonds (images)</div>
       <div class="bg-grid" id="bg-photo-grid"></div>
       <div class="info" style="margin-top:10px;">
         Ajoute tes fonds dans <code>backgrounds/</code> et déclare-les dans
@@ -485,7 +497,7 @@
 
     <!-- Upload custom -->
     <div>
-      <div class="section-title">Ou charger un fond</div>
+      <div class="section-title" data-i18n="uploadBg">Ou charger un fond</div>
       <div class="upload-zone" id="upload-zone">
         <input type="file" id="file-input" accept="image/*" style="display:none" />
         ＋ Cliquer pour uploader une image (JPG, PNG…)
@@ -496,39 +508,39 @@
 
     <!-- Position logo -->
     <div>
-      <div class="section-title">Position du logo</div>
+      <div class="section-title" data-i18n="logoPos">Position du logo</div>
       <div class="pos-row">
         <button class="pos-btn active" data-pos="bottom-center">
           <div class="pos-icon">
             <div class="pos-dot" style="bottom:3px;left:50%;transform:translateX(-50%)"></div>
           </div>
-          Bas · centré
+          <span data-i18n="posBottom">Bas · centré</span>
         </button>
         <button class="pos-btn" data-pos="top-right">
           <div class="pos-icon">
             <div class="pos-dot" style="top:3px;right:3px"></div>
           </div>
-          Haut · droite
+          <span data-i18n="posTopRight">Haut · droite</span>
         </button>
         <button class="pos-btn" data-pos="top-left">
           <div class="pos-icon">
             <div class="pos-dot" style="top:3px;left:3px"></div>
           </div>
-          Haut · gauche
+          <span data-i18n="posTopLeft">Haut · gauche</span>
         </button>
       </div>
     </div>
 
     <!-- Taille logo -->
     <div>
-      <div class="section-title">Taille du logo</div>
+      <div class="section-title" data-i18n="logoSize">Taille du logo</div>
       <div class="slider-row">
-        <label>Petit</label>
+        <label data-i18n="small">Petit</label>
         <input type="range" id="logo-size" min="50" max="200" value="160" step="10" />
-        <label>Grand</label>
+        <label data-i18n="big">Grand</label>
         <span class="slider-val" id="logo-size-out">160px</span>
       </div>
-      <button class="no-footer-btn" id="no-logo-btn" style="margin-top:8px;">✕ Pas de logo</button>
+      <button class="no-footer-btn" id="no-logo-btn" data-i18n="noLogo" style="margin-top:8px;">✕ Pas de logo</button>
     </div>
 
 
@@ -536,21 +548,21 @@
 
     <!-- Footer -->
     <div>
-      <div class="section-title">Footer (bas de l'image)</div>
+      <div class="section-title" data-i18n="footerTitle">Footer (bas de l'image)</div>
       <div class="footer-grid" id="footer-grid"></div>
-      <button class="no-footer-btn active" id="no-footer-btn">✕ Pas de footer</button>
+      <button class="no-footer-btn active" id="no-footer-btn" data-i18n="noFooter">✕ Pas de footer</button>
     </div>
 
     <!-- Taille texte -->
     <div>
-      <div class="section-title">Taille du texte</div>
+      <div class="section-title" data-i18n="textSize">Taille du texte</div>
       <div class="slider-row" style="margin-bottom:10px;">
-        <label>Hadith</label>
+        <label data-i18n="hadithLabel">Hadith</label>
         <input type="range" id="fs-hadith" min="24" max="80" value="74" step="2" />
         <span class="slider-val" id="fs-h-out">74</span>
       </div>
       <div class="slider-row">
-        <label>Source</label>
+        <label data-i18n="sourceLabel">Source</label>
         <input type="range" id="fs-source" min="14" max="72" value="45" step="1" />
         <span class="slider-val" id="fs-s-out">45</span>
       </div>
@@ -563,7 +575,7 @@
     <div class="preview-frame">
       <canvas id="cv" width="800" height="1000"></canvas>
     </div>
-    <button class="dl-btn" id="dl">⬇ Télécharger l'image (800 × 1000)</button>
+    <button class="dl-btn" id="dl" data-i18n="download">⬇ Télécharger l'image (800 × 1000)</button>
   </div>
 
 </div><!-- /container -->
@@ -1027,19 +1039,7 @@ function render() {
   /* 1. Fond */
   drawBackground();
 
-  /* 2. Double cadre décoratif */
-  const bi = 32;
-  ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 1.2;
-  roundRect(ctx, bi, bi, W-bi*2, H-bi*2, 14); ctx.stroke();
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 0.7;
-  roundRect(ctx, bi+10, bi+10, W-bi*2-20, H-bi*2-20, 9); ctx.stroke();
-
-  /* 3. Ornements haut / bas */
-  ctx.fillStyle = 'rgba(255,255,255,0.28)';
-  ctx.font = '16px serif';
-  ctx.textAlign = 'center'; ctx.direction = 'ltr';
-  ctx.fillText('❖ ─── ✦ ─── ❖', W/2, 88);
-  ctx.fillText('❖ ─── ✦ ─── ❖', W/2, H - 68);
+  /* 2. Cadre et ornements supprimés */
 
   /* 4. Texte hadith */
   const MARGIN_PX = 120;
@@ -1164,11 +1164,83 @@ function render() {
 
 }
 
+
+/* ══════════════════════════════════════════════
+   🌐 TRADUCTIONS
+   ══════════════════════════════════════════════ */
+const LANGS = {
+  ar: {
+    appTitle: '✦ منشئ صور الأحاديث ✦',
+    appSub: 'اكتب حديثًا وحمّل الصورة بتنسيق 4:5 (800 × 1000)',
+    hadithTitle: 'نص الحديث', sourceTitle: 'المصدر / المرجع',
+    attached: '↩ ملحقة بالنص', separate: '↕ منفصلة (أسفل)',
+    hadithColor: 'لون النص', hadithOutlineLabel: 'حدود النص',
+    outline: '◻ حدود', hadithBg: 'خلفية النص',
+    presetBg: 'خلفيات جاهزة', myBg: 'خلفياتي (صور)',
+    uploadBg: 'أو تحميل خلفية', logoPos: 'موضع الشعار',
+    logoSize: 'حجم الشعار', footerTitle: 'تذييل (أسفل الصورة)',
+    sourceColor: 'لون المصدر', sourceOutlineLabel: 'حدود المصدر',
+    sourceBgLabel: 'خلفية المصدر', textSize: 'حجم الخط',
+    hadithLabel: 'الحديث', sourceLabel: 'المصدر',
+    small: 'صغير', big: 'كبير',
+    noLogo: '✕ بدون شعار', noFooter: '✕ بدون تذييل',
+    posBottom: 'أسفل · وسط', posTopRight: 'أعلى · يمين', posTopLeft: 'أعلى · يسار',
+    download: '⬇ تحميل الصورة (800 × 1000)',
+    uploadPlaceholder: '＋ انقر لتحميل صورة (JPG, PNG…)',
+  },
+  tr: {
+    appTitle: '✦ Hadis Görseli Oluşturucu ✦',
+    appSub: 'Bir hadis yazın ve 4:5 formatında görsel indirin (800 × 1000)',
+    hadithTitle: 'Hadis Metni', sourceTitle: 'Kaynak / Referans',
+    attached: '↩ Metne Ekli', separate: '↕ Ayrı (Alt)',
+    hadithColor: 'Metin Rengi', hadithOutlineLabel: 'Metin Konturu',
+    outline: '◻ Kontur', hadithBg: 'Metin Arka Planı',
+    presetBg: 'Hazır Arka Planlar', myBg: 'Kendi Arka Planlarım',
+    uploadBg: 'Veya Arka Plan Yükle', logoPos: 'Logo Konumu',
+    logoSize: 'Logo Boyutu', footerTitle: 'Alt Bilgi (Görsel Altı)',
+    sourceColor: 'Kaynak Rengi', sourceOutlineLabel: 'Kaynak Konturu',
+    sourceBgLabel: 'Kaynak Arka Planı', textSize: 'Yazı Boyutu',
+    hadithLabel: 'Hadis', sourceLabel: 'Kaynak',
+    small: 'Küçük', big: 'Büyük',
+    noLogo: '✕ Logosuz', noFooter: '✕ Alt Bilgi Yok',
+    posBottom: 'Alt · Orta', posTopRight: 'Üst · Sağ', posTopLeft: 'Üst · Sol',
+    download: '⬇ Görseli İndir (800 × 1000)',
+    uploadPlaceholder: '＋ Görsel yüklemek için tıklayın (JPG, PNG…)',
+  }
+};
+
+let currentLang = 'ar';
+
+function applyLang(lang) {
+  currentLang = lang;
+  const t = LANGS[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) {
+      // Pour les boutons contour actifs on garde l'état
+      if (key === 'outline') {
+        const isActive = el.classList.contains('active');
+        el.textContent = isActive
+          ? t[key].replace('◻', '◼') + (lang === 'ar' ? ' نشط' : ' Aktif')
+          : t[key];
+      } else {
+        el.textContent = t[key];
+      }
+    }
+  });
+  document.getElementById('flag-ar').classList.toggle('active', lang === 'ar');
+  document.getElementById('flag-tr').classList.toggle('active', lang === 'tr');
+}
+
+document.getElementById('flag-ar').addEventListener('click', () => applyLang('ar'));
+document.getElementById('flag-tr').addEventListener('click', () => applyLang('tr'));
+
 /* ── Init ── */
 buildGradientGrid();
 buildPhotoGrid();
 buildFooterGrid();
 render();
+applyLang('ar');
 </script>
 
 </body>
