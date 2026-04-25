@@ -399,6 +399,45 @@
       <button class="flag-btn active" id="flag-ar" title="العربية">🇸🇦</button>
     </div>
 
+    <!-- Bab -->
+    <div>
+      <div class="section-title" data-i18n="babTitle">Bab (Chapitre)</div>
+      <input type="text" id="bab" placeholder="باب..." style="direction:rtl;font-family:'Amiri',serif;font-size:18px;" />
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="babColor">Couleur du Bab</div>
+      <div class="dot-row" id="color-bab-row">
+        <div class="color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+        <div class="color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
+        <div class="color-dot" data-color="#C9A227" style="background:#C9A227"></div>
+        <div class="color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
+        <div class="color-dot" data-color="#E07070" style="background:#E07070"></div>
+        <div class="color-dot active" data-color="#111111" style="background:#111111;border-color:rgba(255,255,255,0.15)"></div>
+        <div class="color-dot" data-color="#4B0082" style="background:#4B0082"></div>
+        <div class="color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+      </div>
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="babOutlineLabel">Contour du Bab</div>
+      <div class="outline-row">
+        <button class="outline-toggle" id="outline-bab-btn" data-i18n="outline">◻ Contour</button>
+        <input type="range" id="outline-bab-size" min="1" max="12" value="2" step="1" disabled />
+        <span class="slider-val" id="outline-bab-out">2px</span>
+      </div>
+      <div class="color-group-label" style="margin-top:10px;" data-i18n="babBgLabel">Fond derrière le Bab</div>
+      <div class="box-color-row" id="bab-color-row">
+          <div class="no-color-dot active" data-color="none" title="Pas de couleur"></div>
+          <div class="box-color-dot" data-color="#FFFFFF" style="background:#FFFFFF;border-color:rgba(0,0,0,0.2)"></div>
+          <div class="box-color-dot" data-color="#000000" style="background:#000000"></div>
+          <div class="box-color-dot" data-color="#F5E8C0" style="background:#F5E8C0"></div>
+          <div class="box-color-dot" data-color="#1a1209" style="background:#1a1209"></div>
+          <div class="box-color-dot" data-color="#07202a" style="background:#07202a"></div>
+          <div class="box-color-dot" data-color="#091a12" style="background:#091a12"></div>
+          <div class="box-color-dot" data-color="#4B0082" style="background:#4B0082"></div>
+          <div class="box-color-dot" data-color="#6B3A2A" style="background:#6B3A2A"></div>
+          <div class="box-color-dot" data-color="#C9A227" style="background:#C9A227"></div>
+          <div class="box-color-dot" data-color="#5DCAA5" style="background:#5DCAA5"></div>
+      </div>
+    </div>
+
+    <hr class="sep" />
+
     <!-- Hadith -->
     <div>
       <div class="section-title" data-i18n="hadithTitle">Texte du hadith</div>
@@ -557,6 +596,11 @@
     <div>
       <div class="section-title" data-i18n="textSize">Taille du texte</div>
       <div class="slider-row" style="margin-bottom:10px;">
+        <label data-i18n="babLabel">Bab</label>
+        <input type="range" id="fs-bab" min="14" max="80" value="40" step="2" />
+        <span class="slider-val" id="fs-bab-out">40</span>
+      </div>
+      <div class="slider-row" style="margin-bottom:10px;">
         <label data-i18n="hadithLabel">Hadith</label>
         <input type="range" id="fs-hadith" min="24" max="80" value="74" step="2" />
         <span class="slider-val" id="fs-h-out">74</span>
@@ -615,6 +659,10 @@ let footerImg   = null;
 let boxColor    = '#FFFFFF';
 let sourceBgColor = '#FFFFFF';
 let sourceColor = '#111111';
+let babColor      = '#111111';
+let babBgColor    = 'none';
+let outlineBab    = false;
+let outlineBabW   = 2;
 let sourceMode    = 'separate';
 let outlineHadith = false;
 let outlineHadithW = 2;
@@ -905,6 +953,47 @@ document.querySelectorAll('#color-source-row .color-dot').forEach(dot =>
 
 document.getElementById('hadith').addEventListener('input', render);
 document.getElementById('source').addEventListener('input', render);
+document.getElementById('bab').addEventListener('input', render);
+
+// Couleur Bab
+document.querySelectorAll('#color-bab-row .color-dot').forEach(dot =>
+  dot.addEventListener('click', () => {
+    document.querySelectorAll('#color-bab-row .color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    babColor = dot.dataset.color;
+    render();
+  })
+);
+
+// Fond Bab
+document.querySelectorAll('#bab-color-row .box-color-dot, #bab-color-row .no-color-dot').forEach(dot =>
+  dot.addEventListener('click', () => {
+    document.querySelectorAll('#bab-color-row .box-color-dot, #bab-color-row .no-color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    babBgColor = dot.dataset.color;
+    render();
+  })
+);
+
+// Contour Bab
+document.getElementById('outline-bab-btn').addEventListener('click', function() {
+  outlineBab = !outlineBab;
+  this.textContent = outlineBab ? '◼ Contour actif' : '◻ Contour';
+  this.classList.toggle('active', outlineBab);
+  document.getElementById('outline-bab-size').disabled = !outlineBab;
+  render();
+});
+document.getElementById('outline-bab-size').addEventListener('input', function() {
+  outlineBabW = parseInt(this.value);
+  document.getElementById('outline-bab-out').textContent = this.value + 'px';
+  render();
+});
+
+// Taille Bab
+document.getElementById('fs-bab').addEventListener('input', function() {
+  document.getElementById('fs-bab-out').textContent = this.value;
+  render();
+});
 
 // Contour hadith
 document.getElementById('outline-hadith-btn').addEventListener('click', function() {
@@ -1043,7 +1132,28 @@ function render() {
 
   /* 4. Texte hadith */
   const MARGIN_PX = 120;
-  const textCY = H * 0.42;
+  const babText  = document.getElementById('bab').value.trim();
+  const fsBab    = parseInt(document.getElementById('fs-bab').value);
+  const babLineH = fsBab * 1.6;
+
+  // Calcul hauteur Bab pour repositionner le bloc
+  let babLines = 0;
+  if (babText) {
+    ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+    const babWords = babText.split(' ');
+    let bl = '', bLines = [];
+    for (const w of babWords) {
+      const t = bl ? bl + ' ' + w : w;
+      if (ctx.measureText(t).width > textMaxW && bl) { bLines.push(bl); bl = w; }
+      else bl = t;
+    }
+    if (bl) bLines.push(bl);
+    babLines = bLines.length;
+  }
+
+  const babBlockH = babLines > 0 ? babLines * babLineH + 20 : 0;
+  const textCY = H * 0.50 + babBlockH / 2; // hadith décalé vers le bas si Bab présent
+  const babCY  = textCY - (measuredLines * lineH) / 2 - babBlockH / 2 - 10;
   const textMaxW = W - MARGIN_PX * 2;
   const lineH = fsH * 1.75;
 
@@ -1061,6 +1171,35 @@ function render() {
   const measuredLines = tmpLines.length;
 
   // Fond blanc si option active
+  /* Bab — au-dessus du hadith */
+  if (babText) {
+    ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+    ctx.direction = 'rtl'; ctx.textAlign = 'center';
+    if (babBgColor !== 'none') {
+      const bWords = babText.split(' ');
+      let bl2 = '', bL2 = [];
+      for (const w of bWords) {
+        const t = bl2 ? bl2+' '+w : w;
+        if (ctx.measureText(t).width > textMaxW && bl2) { bL2.push(bl2); bl2=w; } else bl2=t;
+      }
+      if (bl2) bL2.push(bl2);
+      const bPX=30, bPY=16;
+      const bW = textMaxW + bPX*2;
+      const bH = bL2.length * babLineH + bPY*2;
+      ctx.save();
+      ctx.fillStyle = babBgColor;
+      roundRect(ctx, W/2-bW/2, babCY - bL2.length*babLineH/2 - bPY, bW, bH, 10);
+      ctx.fill(); ctx.restore();
+    }
+    if (outlineBab) {
+      ctx.strokeStyle='#000000'; ctx.lineWidth=outlineBabW*2; ctx.lineJoin='round';
+      wrapTextStroke(babText, W/2, babCY, textMaxW, babLineH);
+    }
+    ctx.fillStyle = babColor;
+    ctx.font = `bold ${fsBab}px 'Amiri', serif`;
+    wrapText(babText, W/2, babCY, textMaxW, babLineH);
+  }
+
   if (boxColor !== 'none') {
     const tbPadX = 36, tbPadY = 32;
     const tbW = textMaxW + tbPadX * 2;
@@ -1200,6 +1339,8 @@ const LANGS = {
     logoSize: 'Logo Boyutu', footerTitle: 'Alt Bilgi (Görsel Altı)',
     sourceColor: 'Kaynak Rengi', sourceOutlineLabel: 'Kaynak Konturu',
     sourceBgLabel: 'Kaynak Arka Planı', textSize: 'Yazı Boyutu',
+    babTitle: 'Bab (Bölüm)', babColor: 'Bab Rengi', babOutlineLabel: 'Bab Konturu',
+    babBgLabel: 'Bab Arka Planı', babLabel: 'Bab',
     hadithLabel: 'Hadis', sourceLabel: 'Kaynak',
     small: 'Küçük', big: 'Büyük',
     noLogo: '✕ Logosuz', noFooter: '✕ Alt Bilgi Yok',
