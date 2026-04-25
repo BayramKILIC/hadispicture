@@ -379,7 +379,7 @@
 
 <header>
   <h1>✦ Générateur d'images Hadith ✦</h1>
-  <p>Écris un hadith en arabe et télécharge l'image en format portrait (800 × 1200)</p>
+  <p>Écris un hadith en arabe et télécharge l'image en format portrait 4:5 (800 × 1000)</p>
 </header>
 
 <div class="container">
@@ -561,9 +561,9 @@
   <!-- ── Colonne droite : aperçu ── -->
   <div class="preview-col">
     <div class="preview-frame">
-      <canvas id="cv" width="800" height="1200"></canvas>
+      <canvas id="cv" width="800" height="1000"></canvas>
     </div>
-    <button class="dl-btn" id="dl">⬇ Télécharger l'image (800 × 1200)</button>
+    <button class="dl-btn" id="dl">⬇ Télécharger l'image (800 × 1000)</button>
   </div>
 
 </div><!-- /container -->
@@ -588,7 +588,7 @@ const MES_FONDS = [
 /* ══════════════════════════════════════════════
    ⚙️  CONFIG — ne pas modifier sauf si besoin
    ══════════════════════════════════════════════ */
-const W = 800, H = 1200;
+const W = 800, H = 1000;
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
 
