@@ -589,7 +589,7 @@
     <div>
       <div class="section-title" data-i18n="footerTitle">Footer (bas de l'image)</div>
       <div class="footer-grid" id="footer-grid"></div>
-      <button class="no-footer-btn active" id="no-footer-btn" data-i18n="noFooter">✕ Pas de footer</button>
+      <button class="no-footer-btn" id="no-footer-btn" data-i18n="noFooter">✕ Pas de footer</button>
     </div>
 
     <!-- Taille texte -->
@@ -719,6 +719,13 @@ document.getElementById('no-footer-btn').addEventListener('click', () => {
   img.onload = () => { logoImg = img; render(); };
   img.onerror = () => console.warn('logo.png introuvable.');
   img.src = 'logo.png';
+})();
+
+(function loadDefaultFooter() {
+  const img = new Image();
+  img.onload = () => { footerImg = img; render(); };
+  img.onerror = () => {};
+  img.src = 'footer/footer1.jpg';
 })();
 
 (function loadDefaultBg() {
@@ -1182,7 +1189,7 @@ function render() {
   const totalVisualH = BAB_PAD_Y + totalH + HAD_PAD_Y + SRC_H;
 
   // Marge égale en haut et en bas
-  const visualStartY = (CONTENT_ZONE - totalVisualH) / 2;
+  const visualStartY = (CONTENT_ZONE - totalVisualH) / 2 + 20;
   const blockStartY  = visualStartY + BAB_PAD_Y;
   const blockCY      = blockStartY + totalH / 2;
 
