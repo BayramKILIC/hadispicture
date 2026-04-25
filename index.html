@@ -856,7 +856,7 @@ function render() {
   ctx.font = `bold ${fsH}px 'Amiri', serif`;
   ctx.direction = 'rtl';
   const words = hadithText.split(' ');
-  let line = '', lineCount = 0, tmpLines = [];
+  let line = '', tmpLines = [];
   for (const w of words) {
     const t = line ? line + ' ' + w : w;
     if (ctx.measureText(t).width > textMaxW && line) { tmpLines.push(line); line = w; }
