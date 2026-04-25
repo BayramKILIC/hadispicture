@@ -724,20 +724,14 @@ function render() {
   ctx.fillStyle = textColor;
   ctx.textAlign = 'center'; ctx.direction = 'rtl';
   ctx.font = `bold ${fsH}px 'Amiri', serif`;
-  const lineCount = wrapText(hadithText, W/2, H * 0.42, W - 140, fsH * 1.75);
+  const MARGIN_PX = 40; // 0.420 pouces x 96 PPI = 40px de chaque cote
+  const lineCount = wrapText(hadithText, W/2, H * 0.42, W - MARGIN_PX * 2, fsH * 1.75);
 
   /* 5. Source — positionnée dynamiquement sous le hadith */
   if (sourceText) {
     const sourceY = H * 0.42 + (lineCount * fsH * 1.75) / 2 + fsS * 2.4;
-    // Ligne décorative
-    ctx.strokeStyle = textColor + '44'; ctx.lineWidth = 0.8;
-    ctx.beginPath();
-    ctx.moveTo(W/2 - 130, sourceY - fsS * 0.9);
-    ctx.lineTo(W/2 + 130, sourceY - fsS * 0.9);
-    ctx.stroke();
-    // Texte source
     ctx.fillStyle = textColor + 'BB';
-    ctx.font = `italic ${fsS}px 'Amiri', serif`;
+    ctx.font = `${fsS}px 'Amiri', serif`;
     ctx.direction = 'rtl';
     ctx.fillText(sourceText, W/2, sourceY);
   }
